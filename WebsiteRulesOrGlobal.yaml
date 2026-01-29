@@ -16,6 +16,7 @@ payload:
   - DOMAIN-KEYWORD,avsox
   - DOMAIN-SUFFIX,suburl.v1.mk
   - DOMAIN-SUFFIX,themoviedb.org
+  - DOMAIN-SUFFIX,tmdb.org
   - DOMAIN-SUFFIX,image.tmdb.org
   - DOMAIN-SUFFIX,1mei.live
   - DOMAIN-SUFFIX,linux.do
