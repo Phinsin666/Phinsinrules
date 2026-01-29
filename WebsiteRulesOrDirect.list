@@ -3,8 +3,13 @@ DOMAIN-SUFFIX,v1.wzip.download
 DOMAIN-SUFFIX,v1.wzip.date
 DOMAIN-SUFFIX,api1.day.app
 DOMAIN-SUFFIX,bark.day.app
-DOMAIN-KEYWORD, yuheng
-DOMAIN-KEYWORD, yqc-premium
-DOMAIN-KEYWORD, clashofclans
-DOMAIN,steamcdn-a.akamaihd.net,DIRECT
-DOMAIN-SUFFIX,steamserver.net,DIRECT
+DOMAIN-KEYWORD,yuheng
+DOMAIN-KEYWORD,yqc-premium
+DOMAIN-KEYWORD,clashofclans
+DOMAIN-KEYWORD,jpshuntong
+DOMAIN-KEYWORD,rustdesk
+DOMAIN,steamcdn-a.akamaihd.net
+DOMAIN-SUFFIX,steamserver.net
+DOMAIN-SUFFIX,961875654.xyz
+
+
