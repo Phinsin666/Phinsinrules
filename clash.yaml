@@ -1,0 +1,277 @@
+port: 7890
+socks-port: 7891
+mixed-port: 7897
+redir-port: 7893
+tproxy-port: 7894
+
+unified-delay: true
+geodata-mode: false
+geodata-loader: standard
+geo-auto-update: true
+geo-update-interval: 24
+tcp-concurrent: true
+find-process-mode: strict
+global-client-fingerprint: chrome
+
+allow-lan: true
+mode: rule
+log-level: info
+ipv6: true
+udp: true
+
+external-controller: 0.0.0.0:9090
+# external-ui: ui
+# external-ui-url: 'https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip'
+
+# geox-url:
+#   # geoip: 'https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat'
+#   # geosite: 'https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat'
+#   mmdb: 'https://geodata.kelee.one/Country-Masaiki.mmdb'
+#   asn: 'https://geodata.kelee.one/GeoLite2-ASN-P3TERX.mmdb'
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+sniffer:
+  enable: true
+  force-dns-mapping: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    HTTP:
+      ports: [80, 8080-8880]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  force-domain:
+    - +.v2ex.com
+
+  skip-domain:
+    - Mijia Cloud
+
+tun:
+  enable: true
+  stack: system
+  dns-hijack:
+    - any:53
+  auto-route: true
+  auto-detect-interface: true
+
+dns:
+  enable: true
+  listen: 0.0.0.0:1053
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 28.0.0.1/8
+  fake-ip-filter:
+    - "*"
+    - +.lan
+  default-nameserver:
+    - 223.5.5.5
+    - 223.6.6.6
+  nameserver:
+    - https://223.5.5.5/dns-query#h3=true
+    - https://223.6.6.6/dns-query#h3=true
+# 锚点 - 节点订阅的参数 [每6小时更新一次订阅节点，每 6 秒一次健康检查]
+NodeParam: &NodeParam {type: http, interval: 21600, health-check: {enable: true, url: 'http://www.gstatic.com/generate_204', interval: 6}}
+# # 锚点 - 节点订阅
+proxy-providers: 
+  p1:
+    url: 'http://127.0.0.1:38324/download/1ff'
+    <<: *NodeParam
+    path: './proxy_provider/providers1.yaml'
+  p2:
+     url: 'http://127.0.0.1:38324/download/ndia'
+     <<: *NodeParam
+     path: './proxy_provider/providers2.yaml'
+  # p4:
+  #   url: 'http://127.0.0.1:38324/download/ph?noCache=true'
+  #   <<: *NodeParam
+  #   path: './proxy_provider/providers4.yaml'  
+  # p5:
+  #   url: '###'
+  #   <<: *NodeParam
+  #   path: './proxy_provider/providers5.yaml'  
+# 策略组参数锚点
+# 锚点 - 时延优选参数 [每 6 秒一次惰性健康检查，容差 20ms，时延超过 2 秒判定为失败，失败 3 次则自动触发健康检查]
+UrlTest: &UrlTest {type: url-test, interval: 6, tolerance: 20, lazy: true, url: 'http://www.gstatic.com/generate_204', disable-udp: false, timeout: 2000, max-failed-times: 3, hidden: true, include-all-providers: true}
+# 锚点 - 故障转移参数 [每 6 秒一次惰性健康检查，时延超过 2 秒判定为失败，失败 3 次则自动触发健康检查]
+FallBack: &FallBack {type: fallback, interval: 6, lazy: true, url: 'http://www.gstatic.com/generate_204', disable-udp: false, timeout: 2000, max-failed-times: 3, hidden: true, include-all-providers: true}
+# 锚点 - 负载均衡参数 [每 6 秒一次惰性健康检查，时延超过 2 秒判定为失败，失败 3 次则自动触发健康检查]
+LoadBalance: &LoadBalance {type: load-balance, interval: 6, lazy: true, url: 'http://www.gstatic.com/generate_204', disable-udp: false, strategy: consistent-hashing, timeout: 2000, max-failed-times: 3, hidden: true, include-all-providers: true}
+# 锚点 - 规则参数 [每小时更新一次订阅规则，更新规则时使用直连策略]
+# RuleProviders: &RuleProviders {type: http, behavior: classical, interval: 3600, format: yaml, proxy: DIRECT}
+
+proxy-groups:
+    - {name: 🇭🇰香港策略, type: select, proxies: [香港时延优选策略组, 香港故障转移策略组, 香港负载均衡策略组]}
+    - {name: 🇹🇼台湾策略, type: select, proxies: [台湾时延优选策略组, 台湾故障转移策略组, 台湾负载均衡策略组]}
+    - {name: 🇯🇵日本策略, type: select, proxies: [日本时延优选策略组, 日本故障转移策略组, 日本负载均衡策略组]}
+    - {name: 🇰🇷韩国策略, type: select, proxies: [韩国时延优选策略组, 韩国故障转移策略组, 韩国负载均衡策略组]}
+    - {name: 🇸🇬新加坡策略, type: select, proxies: [新加坡时延优选策略组, 新加坡故障转移策略组, 新加坡负载均衡策略组]}
+    - {name: 🇺🇸美国策略, type: select, proxies: [美国时延优选策略组, 美国故障转移策略组, 美国负载均衡策略组]}
+    - {name: 🇬🇧英国策略, type: select, proxies: [英国时延优选策略组, 英国故障转移策略组, 英国负载均衡策略组]}
+    - {name: 🇭🇰香港策略2, type: select, proxies: [香港时延优选策略组2, 香港故障转移策略组2, 香港负载均衡策略组2]}
+    - {name: 🇹🇼台湾策略2, type: select, proxies: [台湾时延优选策略组2, 台湾故障转移策略组2, 台湾负载均衡策略组2]}
+    - {name: 🇯🇵日本策略2, type: select, proxies: [日本时延优选策略组2, 日本故障转移策略组2, 日本负载均衡策略组2]}
+    - {name: 🇰🇷韩国策略2, type: select, proxies: [韩国时延优选策略组2, 韩国故障转移策略组2, 韩国负载均衡策略组2]}
+    - {name: 🇸🇬新加坡策略2, type: select, proxies: [新加坡时延优选策略组2, 新加坡故障转移策略组2, 新加坡负载均衡策略组2]}
+    - {name: 🇺🇸美国策略2, type: select, proxies: [美国时延优选策略组2, 美国故障转移策略组2, 美国负载均衡策略组2]}
+    # 写p2的原因是youtube只有p2的订阅没有人机验证，所以索性就弄个各个国家的策略只用p2
+  #分流分组
+    - {name: 手动切换, type: select, include-all: true, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Static.png }
+    - {name: 手动切换2, type: select, include-all: true, icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Static.png }
+    - {name: 全球加速, type: select, proxies: [🇯🇵日本策略,手动切换, 手动切换2,DIRECT, 🇭🇰香港策略,  🇹🇼台湾策略, 🇺🇸美国策略, 🇸🇬新加坡策略], icon: https://raw.githubusercontent.com/Phinsin666/Phinsinrules/refs/heads/main/Icon/finger.png }
+    - {name: Youtube,   type: select, proxies: [全球加速,🇯🇵日本策略, 🇰🇷韩国策略, 🇭🇰香港策略, 🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/youtube.svg}
+    # - {name: Youtube,   type: select, proxies: [全球加速,🇯🇵日本策略2, 🇭🇰香港策略2,  🇺🇸美国策略2, 🇹🇼台湾策略2, 🇸🇬新加坡策略2, 手动切换,DIRECT,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/youtube.svg}
+    - {name: Discord,   type: select, proxies: [🇯🇵日本策略2, 🇭🇰香港策略2, 全球加速, 🇺🇸美国策略2, 🇹🇼台湾策略2, 🇸🇬新加坡策略2, 手动切换,DIRECT,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/youtube.svg}
+    - {name: Microsoft,   type: select, proxies: [DIRECT,全球加速,🇰🇷韩国策略,🇯🇵日本策略, 🇭🇰香港策略, 🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/microsoft.svg}
+    - {name: Sony,   type: select, proxies: [🇭🇰香港策略, DIRECT,全球加速,🇰🇷韩国策略,🇯🇵日本策略, 🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/microsoft.svg}
+    - {name: Tiktok, type: select, proxies: [🇯🇵日本策略, 🇭🇰香港策略,  🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,DIRECT,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/tiktok.svg }
+    - {name: Github, type: select, proxies: [🇯🇵日本策略, 🇭🇰香港策略,  🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,DIRECT,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/tiktok.svg }
+    - {name: 哔哩哔哩, type: select, proxies: [DIRECT, 🇯🇵日本策略,🇭🇰香港策略, 手动切换,🇹🇼台湾策略,手动切换2], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/bilibili.png }
+    - {name: Claude,   type: select, proxies: [🇺🇸美国策略, 手动切换,全球加速,🇯🇵日本策略,🇸🇬新加坡策略,手动切换2], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png }
+    - {name: OpenAi,   type: select, proxies: [🇺🇸美国策略, 手动切换,全球加速,🇯🇵日本策略,🇸🇬新加坡策略,手动切换2], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png }
+    - {name: Twitter, type: select, proxies: [全球加速,🇰🇷韩国策略2,🇯🇵日本策略2, 🇭🇰香港策略2, 🇺🇸美国策略2, 🇹🇼台湾策略2, 🇸🇬新加坡策略2, 手动切换, DIRECT,手动切换2],icon: https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/twitter.png}
+    - {name: XiaoHongShu,   type: select, proxies: [ DIRECT,全球加速,🇰🇷韩国策略,🇯🇵日本策略, 🇭🇰香港策略, 🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,手动切换2],icon: https://raw.githubusercontent.com/Phinsin-personal/phinsin-personal-rules/refs/heads/main/Icon/XiaoHongShu.png}
+    - {name: Paypal,   type: select, proxies: [🇺🇸美国策略, 手动切换,全球加速,🇰🇷韩国策略,手动切换2, DIRECT], icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/PayPal.png }
+    - {name: hanime1,  type: select, proxies: [🇹🇼台湾策略, 🇭🇰香港策略, 全球加速,🇰🇷韩国策略,手动切换,手动切换2],icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Taiwan.png}
+    - {name: WebsiteRulesOrDirect,  type: select, proxies: [DIRECT,  全球加速,🇰🇷韩国策略,🇯🇵日本策略, 🇭🇰香港策略,  🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,手动切换2], icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/China.png}
+    - {name: WebsiteRulesOrGlobal,  type: select, proxies: [全球加速,🇰🇷韩国策略,手动切换, DIRECT, 🇭🇰香港策略, 🇯🇵日本策略, 🇹🇼台湾策略, 🇺🇸美国策略, 🇸🇬新加坡策略,手动切换2],icon: https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/categoryglobe.png}
+    - {name: 电报消息, type: select, proxies: [全球加速,🇰🇷韩国策略,手动切换, DIRECT, 🇭🇰香港策略, 🇯🇵日本策略, 🇹🇼台湾策略, 🇺🇸美国策略, 🇸🇬新加坡策略,手动切换2], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Telegram.png }
+    - {name: Spotify,   type: select, proxies: [全球加速,🇰🇷韩国策略,手动切换, DIRECT,🇭🇰香港策略, 🇯🇵日本策略, 🇹🇼台湾策略, 🇺🇸美国策略, 🇸🇬新加坡策略,手动切换2], icon: https://fastly.jsdelivr.net/gh/Koolson/Qure@master/IconSet/Color/Spotify.png}
+    - {name: steam,   type: select, proxies: [全球加速,🇰🇷韩国策略,DIRECT, 🇭🇰香港策略, 🇹🇼台湾策略, 手动切换,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/steam.svg}
+    - {name: steamCN,   type: select, proxies: [DIRECT, 🇭🇰香港策略, 🇹🇼台湾策略, 全球加速,🇰🇷韩国策略,手动切换,手动切换2],icon: https://clash-verge-rev.github.io/assets/icons/steam.svg}
+    - {name: Netflix,  type: select, proxies: [🇭🇰香港策略,🇹🇼台湾策略, 🇸🇬新加坡策略, 全球加速,🇰🇷韩国策略,手动切换,手动切换2],icon: https://fastly.jsdelivr.net/gh/shindgewongxj/WHATSINStash@master/icon/netflix.png}
+    - {name: Wechat, type: select, proxies: [DIRECT, 🇯🇵日本策略,🇭🇰香港策略, 手动切换,🇹🇼台湾策略,手动切换2], icon: https://raw.githubusercontent.com/Phinsin-personal/phinsin-personal-rules/refs/heads/main/Icon/wechat.png }
+    - {name: Xbox,   type: select, proxies: [DIRECT,全球加速,🇰🇷韩国策略, 🇭🇰香港策略, 🇹🇼台湾策略,手动切换,手动切换2],icon: https://raw.githubusercontent.com/Phinsin-personal/phinsin-personal-rules/refs/heads/main/Icon/xbox.png}
+    - {name: Epic, type: select, proxies: [DIRECT,  全球加速,🇰🇷韩国策略,🇯🇵日本策略, 🇭🇰香港策略,  🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,手动切换2], icon: https://clash-verge-rev.github.io/assets/icons/epic.svg}
+    - {name: EA, type: select, proxies: [ 全球加速,🇰🇷韩国策略,DIRECT, 🇯🇵日本策略, 🇭🇰香港策略,  🇺🇸美国策略, 🇹🇼台湾策略, 🇸🇬新加坡策略, 手动切换,手动切换2], icon: https://raw.githubusercontent.com/Phinsin-personal/phinsin-personal-rules/refs/heads/main/Icon/Electronic%20Arts.png}
+    - {name: 苹果服务, type: select, proxies: [DIRECT, 手动切换, 🇭🇰香港策略, 🇯🇵日本策略, 🇹🇼台湾策略, 🇺🇸美国策略, 🇸🇬新加坡策略,手动切换2], icon: https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Apple.png }
+    - {name: 兜底分流, type: select, proxies: [全球加速,🇰🇷韩国策略,手动切换, DIRECT, 🇭🇰香港策略, 🇯🇵日本策略, 🇹🇼台湾策略, 🇺🇸美国策略, 🇸🇬新加坡策略,手动切换2], icon: https://raw.githubusercontent.com/Orz-3/mini/master/Color/Final.png }
+    - {name: 🇬🇧英国策略2, type: select, proxies: [英国时延优选策略组2, 英国故障转移策略组2, 英国负载均衡策略组2]}
+  #节点分组
+
+# 时延优选策略组
+    - {name: 香港时延优选策略组, type: url-test, include-all: true, interval: 6, tolerance: 20, filter: "🇭🇰|港|HK|(?i)Hong"}
+    - {name: 台湾时延优选策略组, type: url-test, include-all: true, interval: 6, tolerance: 20, filter: "🇹🇼|台|湾|TW|(?i)Taiwan"}
+    - {name: 日本时延优选策略组, type: url-test, include-all: true, interval: 6, tolerance: 20, filter: "🇯🇵|日|东京|JP|(?i)Japan"}
+    - {name: 韩国时延优选策略组, type: url-test, include-all: true, interval: 6, tolerance: 20, filter: "🇰🇷|韩国|韓|首尔|(?i)KR|Korea"}
+    - {name: 新加坡时延优选策略组, type: url-test, include-all: true, interval: 6, tolerance: 20, filter: "🇸🇬|新|坡|SG|(?i)Singapore"}
+    - {name: 美国时延优选策略组, type: url-test, include-all: true, interval: 6, tolerance: 20,  filter: "🇺🇸|美|US|(?i)States|American"}
+    - {name: 英国时延优选策略组, type: url-test, include-all: true, interval: 6, tolerance: 20, filter: "🇬🇧|英国|伦敦|(?i)UK|United Kingdom"}
+    - {name: 香港时延优选策略组2, type: url-test, use: [p2], interval: 6, tolerance: 20, filter: "🇭🇰|港|HK|(?i)Hong"}
+    - {name: 台湾时延优选策略组2, type: url-test, use: [p2], interval: 6, tolerance: 20, filter: "🇹🇼|台|湾|TW|(?i)Taiwan"}
+    - {name: 日本时延优选策略组2, type: url-test, use: [p2], interval: 6, tolerance: 20, filter: "🇯🇵|日|东京|JP|(?i)Japan"}
+    - {name: 韩国时延优选策略组2, type: url-test, use: [p2], interval: 6, tolerance: 20, filter: "🇰🇷|韩国|韓|首尔|(?i)KR|Korea"}
+    - {name: 新加坡时延优选策略组2, type: url-test, use: [p2], interval: 6, tolerance: 20, filter: "🇸🇬|新|坡|SG|(?i)Singapore"}
+    - {name: 美国时延优选策略组2, type: url-test, use: [p2], interval: 6, tolerance: 20,  filter: "🇺🇸|美|US|(?i)States|American"}
+    - {name: 英国时延优选策略组2, type: url-test, use: [p2], interval: 6, tolerance: 20, filter: "🇬🇧|英国|伦敦|(?i)UK|United Kingdom"}
+    
+# 故障转移策略组
+    - {name: 香港故障转移策略组, type: fallback, include-all: true, interval: 6, tolerance: 20, filter: "🇭🇰|港|HK|(?i)Hong"}
+    - {name: 台湾故障转移策略组, type: fallback, include-all: true, interval: 6, tolerance: 20, filter: "🇹🇼|台|湾|TW|(?i)Taiwan"}
+    - {name: 日本故障转移策略组, type: fallback, include-all: true, interval: 6, tolerance: 20, filter: "🇯🇵|日|东京|JP|(?i)Japan"}
+    - {name: 韩国故障转移策略组, type: fallback, include-all: true, interval: 6, tolerance: 20, filter: "🇰🇷|韩国|韓|首尔|(?i)KR|Korea"}
+    - {name: 新加坡故障转移策略组, type: fallback, include-all: true, interval: 6, tolerance: 20, filter: "🇸🇬|新|坡|SG|(?i)Singapore"}
+    - {name: 美国故障转移策略组, type: fallback, include-all: true, interval: 6, tolerance: 20, filter: "🇺🇸|美|US|(?i)States|American"}
+    - {name: 英国故障转移策略组, type: fallback, include-all: true, interval: 6, tolerance: 20, filter: "🇬🇧|英国|伦敦|(?i)UK|United Kingdom"}
+    - {name: 台湾故障转移策略组2, type: fallback, use: [p2], interval: 6, tolerance: 20, filter: "🇹🇼|台|湾|TW|(?i)Taiwan"}
+    - {name: 香港故障转移策略组2, type: fallback, use: [p2], interval: 6, tolerance: 20, filter: "🇭🇰|港|HK|(?i)Hong"}
+    - {name: 日本故障转移策略组2, type: fallback, use: [p2], interval: 6, tolerance: 20, filter: "🇯🇵|日|东京|JP|(?i)Japan"}
+    - {name: 韩国故障转移策略组2, type: fallback, use: [p2], interval: 6, tolerance: 20, filter: "🇰🇷|韩国|韓|首尔|(?i)KR|Korea"}
+    - {name: 新加坡故障转移策略组2, type: fallback, use: [p2],interval: 6, tolerance: 20, filter: "🇸🇬|新|坡|SG|(?i)Singapore"}
+    - {name: 美国故障转移策略组2, type: fallback, use: [p2], interval: 6, tolerance: 20, filter: "🇺🇸|美|US|(?i)States|American"}
+    - {name: 英国故障转移策略组2, type: fallback, use: [p2], interval: 6, tolerance: 20, filter: "🇬🇧|英国|伦敦|(?i)UK|United Kingdom"}
+
+# 负载均衡策略组
+# strategy: consistent-hashing  -散列(更适合机场，不会来回跳IP)
+# strategy: round-robin    -轮询(适合优选IP即一样的落地IP)
+    - {name: 香港负载均衡策略组, type: load-balance, include-all: true, interval: 6, tolerance: 20, filter: "🇭🇰|港|HK|(?i)Hong"}
+    - {name: 台湾负载均衡策略组, type: load-balance, include-all: true, interval: 6, tolerance: 20, filter: "🇹🇼|台|湾|TW|(?i)Taiwan"}
+    - {name: 日本负载均衡策略组, type: load-balance,strategy: consistent-hashing, include-all: true, interval: 6, tolerance: 20, filter: "🇯🇵|日|东京|JP|(?i)Japan"}
+    - {name: 韩国负载均衡策略组, type: load-balance, include-all: true, interval: 6, tolerance: 20, filter: "🇰🇷|韩国|韓|首尔|(?i)KR|Korea"}
+    - {name: 新加坡负载均衡策略组, type: load-balance, include-all: true, interval: 6, tolerance: 20, filter: "🇸🇬|新|坡|SG|(?i)Singapore"}
+    - {name: 美国负载均衡策略组, type: load-balance, include-all: true, interval: 6, tolerance: 20, filter: "🇺🇸|美|US|(?i)States|American"}
+    - {name: 英国负载均衡策略组, type: load-balance, include-all: true, interval: 6, tolerance: 20, filter: "🇬🇧|英国|伦敦|(?i)UK|United Kingdom"}
+    - {name: 香港负载均衡策略组2, type: load-balance, use: [p2], interval: 6, tolerance: 20, filter: "🇭🇰|港|HK|(?i)Hong"}
+    - {name: 台湾负载均衡策略组2, type: load-balance, use: [p2], interval: 6, tolerance: 20, filter: "🇹🇼|台|湾|TW|(?i)Taiwan"}
+    - {name: 日本负载均衡策略组2, type: load-balance, use: [p2], interval: 6, tolerance: 20, filter: "🇯🇵|日|东京|JP|(?i)Japan"}
+    - {name: 韩国负载均衡策略组2, type: load-balance, use: [p2], interval: 6, tolerance: 20, filter: "🇰🇷|韩国|韓|首尔|(?i)KR|Korea"}
+    - {name: 新加坡负载均衡策略组2, type: load-balance, use: [p2], interval: 6, tolerance: 20, filter: "🇸🇬|新|坡|SG|(?i)Singapore"}
+    - {name: 美国负载均衡策略组2, type: load-balance, use: [p2], interval: 6, tolerance: 20, filter: "🇺🇸|美|US|(?i)States|American"}
+    - {name: 英国负载均衡策略组2, type: load-balance, use: [p2], interval: 6, tolerance: 20, filter: "🇬🇧|英国|伦敦|(?i)UK|United Kingdom"}
+  
+  # 分流规则 
+rule-providers:
+    Claude:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Claude/Claude.yaml ,                      path: ./ruleset/Claude.yaml       }
+    Sony:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Sony/Sony.yaml ,                      path: ./ruleset/Sony.yaml       }
+    OpenAi:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI.yaml ,                      path: ./ruleset/OpenAi.yaml       }
+    Epic:        {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Epic/Epic.yaml,                  path: ./ruleset/Epic.yaml     }
+    Netflix:        {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Netflix/Netflix.yaml,                  path: ./ruleset/Netflix.yaml     }
+    Github:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/GitHub/GitHub.yaml ,                      path: ./ruleset/Github.yaml       }
+    BiliBili:    {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BiliBili/BiliBili.yaml ,                  path: ./ruleset/BiliBili.yaml     }
+    Bahamut:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Bahamut/Bahamut.yaml ,                    path: ./ruleset/Bahamut.yaml      } 
+    Tiktok:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/TikTok/TikTok.yaml,                  path: ./ruleset/Tiktok.yaml     }
+    Spotify:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Spotify/Spotify.yaml,                  path: ./ruleset/Spotify.yaml     }
+    Wechat:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/WeChat/WeChat.yaml,                  path: ./ruleset/Wechat.yaml     }
+    steam:       {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Steam/Steam.yaml,                          path: ./ruleset/steam.yaml         }
+    Tmdb:       {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Tmdb/Tmdb.yaml,                          path: ./ruleset/Tmdb.yaml         }
+    steamCN:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/SteamCN/SteamCN.yaml,                          path: ./ruleset/steamCN.yaml         }
+    WebsiteRulesOrDirect:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/Phinsin666/Phinsinrules/refs/heads/main/WebsiteRulesOrDirect.yaml,                        path: ./ruleset/WebsiteRulesOrDirect.yaml      }
+    WebsiteRulesOrGlobal:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/Phinsin666/Phinsinrules/refs/heads/main/WebsiteRulesOrGlobal.yaml,                        path: ./ruleset/WebsiteRulesOrGlobal.yaml     }
+    Youtube:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/YouTube/YouTube.yaml,                  path: ./ruleset/Youtube.yaml     }
+    Discord:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Discord/Discord.yaml,                  path: ./ruleset/Discord.yaml     }
+    XiaoHongShu:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/XiaoHongShu/XiaoHongShu.yaml,                  path: ./ruleset/XiaoHongShu.yaml     }
+    EA:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/EA/EA.yaml,                  path: ./ruleset/EA.yaml     }
+    Xbox:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Xbox/Xbox.yaml,                  path: ./ruleset/Xbox.yaml     }
+    hanime1:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/Phinsin666/Phinsinrules/refs/heads/main/tw.yaml,                  path: ./ruleset/hanime1.yaml     }
+    Paypal:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/PayPal/PayPal.yaml,                  path: ./ruleset/Paypal.yaml     }
+    Apple:       {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Apple/Apple_Classical.yaml ,              path: ./ruleset/Apple.yaml        }
+    Microsoft:   {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Microsoft/Microsoft.yaml ,                path: ./ruleset/Microsoft.yaml    }
+    Telegram:    {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Telegram/Telegram.yaml ,                  path: ./ruleset/Telegram.yaml     }
+    Twitter:     {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Twitter/Twitter.yaml ,                    path: ./ruleset/Twitter.yaml      }
+    ProxyLite:   {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/ProxyLite/ProxyLite.yaml ,                path: ./ruleset/ProxyLite.yaml    }
+    Direct:      {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Direct/Direct.yaml ,                      path: ./ruleset/Direct.yaml       }
+    Lan:         {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Lan/Lan.yaml ,                            path: ./ruleset/Lan.yaml          }
+    Download:    {behavior: classical, interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/Download/Download.yaml ,                  path: ./ruleset/Download.yaml     }
+    ChinaIP:     {behavior: ipcidr,    interval: 86400, format: yaml, type: http, url: https://raw.githubusercontent.com/soffchen/GeoIP2-CN/release/clash-rule-provider.yml ,                                     path: ./ruleset/ChinaIP.yaml      }
+  
+  # 分流Policy 
+rules:
+    - RULE-SET,OpenAi,OpenAi
+    - RULE-SET,Sony,Sony
+    - RULE-SET,Tmdb,全球加速
+    - RULE-SET,Claude,Claude
+    - RULE-SET,Discord,Discord
+    - RULE-SET,BiliBili,哔哩哔哩
+    - RULE-SET,Bahamut,哔哩哔哩
+    - RULE-SET,Netflix,Netflix
+    - RULE-SET,Github,Github
+    - RULE-SET,Apple,苹果服务
+    - RULE-SET,Youtube,Youtube
+    - RULE-SET,XiaoHongShu,XiaoHongShu
+    - RULE-SET,steamCN,steamCN
+    - RULE-SET,steam,steam
+    - RULE-SET,Wechat,Wechat
+    - RULE-SET,Epic,Epic
+    - RULE-SET,Xbox,Xbox
+    - RULE-SET,EA,EA
+    - RULE-SET,Spotify,Spotify
+    - RULE-SET,Tiktok,Tiktok
+    - RULE-SET,WebsiteRulesOrDirect,WebsiteRulesOrDirect
+    - RULE-SET,WebsiteRulesOrGlobal,WebsiteRulesOrGlobal
+    - RULE-SET,hanime1,hanime1
+    - RULE-SET,Paypal,Paypal
+    - RULE-SET,Microsoft,Microsoft
+    - RULE-SET,Telegram,电报消息
+    - RULE-SET,Twitter,Twitter
+    - RULE-SET,ProxyLite,全球加速
+    - RULE-SET,ChinaIP,DIRECT
+    - RULE-SET,Direct,DIRECT
+    - RULE-SET,Lan,DIRECT
+    - RULE-SET,Download,DIRECT
+    - GEOIP,CN,DIRECT
+    - MATCH,兜底分流
