@@ -193,7 +193,17 @@ function checkAndSign(auth, isHTTPContext) {
     }
 
     if (result.data.todaySigned === true) {
-      // 已签到时保持安静，避免每次打开小程序都重复通知。
+      // 页面自动触发时保持安静；手动运行和 Cron 明确报告当前状态。
+      if (!isHTTPContext) {
+        var details = [];
+        if (typeof result.data.consecutiveDays !== "undefined") {
+          details.push("连续 " + result.data.consecutiveDays + " 天");
+        }
+        if (typeof result.data.totalPoints !== "undefined") {
+          details.push("总积分 " + result.data.totalPoints);
+        }
+        notify("今日已签到", details.length ? details.join(" | ") : "无需重复签到");
+      }
       finish(isHTTPContext);
       return;
     }
