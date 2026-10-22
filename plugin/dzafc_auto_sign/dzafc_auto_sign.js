@@ -14,6 +14,7 @@ var API_ROOT = "https://mx.dzafc.cn";
 var STATUS_URL = API_ROOT + "/api/iris/v1/sign/status";
 var SIGN_URL = API_ROOT + "/api/iris/v1/sign/daily";
 var AUTH_PATH = "/api/pie/v1/wechat/miniapp/authentication";
+var STATUS_PATH = "/api/iris/v1/sign/status";
 
 function headerValue(headers, name) {
   headers = headers || {};
@@ -46,6 +47,23 @@ function notify(subtitle, content) {
   $notification.post("东证小程序签到", subtitle, String(content || ""));
 }
 
+function storeAuthentication(auth) {
+  var previous = loadAuthentication();
+  var now = Date.now();
+  var shouldNotify = !previous ||
+    previous.accessToken !== auth.accessToken ||
+    now - Number(previous.notifiedAt || 0) > 60000;
+
+  auth.capturedAt = now;
+  auth.notifiedAt = shouldNotify ? now : Number(previous && previous.notifiedAt || 0);
+
+  var saved = $persistentStore.write(JSON.stringify(auth), STORE_KEY);
+  if (saved && shouldNotify) {
+    notify("登录凭据已获取", "Token 与账号 Header 已保存到 Loon 本机");
+  }
+  return saved;
+}
+
 function saveAuthentication() {
   var response = parseJSON($response.body);
   var data = response && response.data;
@@ -73,11 +91,27 @@ function saveAuthentication() {
     return false;
   }
 
-  var saved = $persistentStore.write(JSON.stringify(auth), STORE_KEY);
-  if (saved) {
-    notify("登录凭据已获取", "Token 与账号 Header 已保存到 Loon 本机");
+  return storeAuthentication(auth);
+}
+
+function saveAuthenticationFromRequest() {
+  var headers = $request.headers || {};
+  var auth = {
+    accessToken: String(headerValue(headers, "x-access-token") || ""),
+    accountId: String(headerValue(headers, "x-account-id") || ""),
+    ownerId: String(headerValue(headers, "x-owner-id") || ""),
+    deviceId: String(headerValue(headers, "x-device-id") || ""),
+    client: String(headerValue(headers, "x-client") || "3"),
+    clientVersion: String(headerValue(headers, "x-client-version") || ""),
+    userAgent: String(headerValue(headers, "user-agent") || "Mozilla/5.0"),
+    acceptLanguage: String(headerValue(headers, "accept-language") || "zh-CN,zh-Hans;q=0.9")
+  };
+
+  if (!auth.accessToken || !auth.accountId || !auth.ownerId || !auth.deviceId) {
+    notify("登录态捕获失败", "签到状态请求缺少必要的认证 Header");
+    return false;
   }
-  return saved;
+  return storeAuthentication(auth);
 }
 
 function loadAuthentication() {
@@ -180,6 +214,20 @@ if (isHTTPContext && $request.url.indexOf(AUTH_PATH) !== -1) {
     }
   } else {
     finish(true);
+  }
+} else if (isHTTPContext && $request.url.indexOf(STATUS_PATH) !== -1) {
+  if (!saveAuthenticationFromRequest()) {
+    finish(true);
+  } else {
+    var statusAuth = loadAuthentication();
+    var statusResult = parseJSON($response.body);
+    if (statusResult && String(statusResult.code) === "0" && statusResult.data) {
+      if (statusResult.data.todaySigned === true) finish(true);
+      else performSign(statusAuth, true);
+    } else {
+      notify("状态解析失败", statusResult ? (statusResult.message || statusResult.code) : "响应不是有效 JSON");
+      finish(true);
+    }
   }
 } else {
   var auth = loadAuthentication();

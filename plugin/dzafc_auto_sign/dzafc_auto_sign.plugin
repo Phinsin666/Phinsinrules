@@ -1,14 +1,16 @@
 #!name = 东证小程序自动签到
 #!desc = 打开微信小程序时捕获短期登录态并自动签到；每天 09:45 使用最近登录态补签。
-#!author = Local
+#!author = @Phinsin666
+#!homepage = https://github.com/Phinsin666/Phinsinrules/tree/main/plugin/dzafc_auto_sign
 #!system = iOS,iPadOS
 #!loon_version = 3.5.1(983)
 #!date = 2026-10-22
 
 [Script]
-response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/wechat\/miniapp\/authentication(?:\?|$)/ && ${response.status} == 200 then script("dzafc_auto_sign.js") with tag="捕获东证登录并签到", timeout=30, requires_body=true
-cron "45 9 * * *" then script("dzafc_auto_sign.js") with tag="东证每日补签", timeout=60
-generic then script("dzafc_auto_sign.js") with tag="手动执行东证签到", timeout=60, img_url="checkmark.circle.system"
+response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/wechat\/miniapp\/authentication(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign.js") with tag="捕获东证登录并签到", timeout=30, requires_body=true
+response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/iris\/v1\/sign\/status(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign.js") with tag="东证签到页获取凭据", timeout=30, requires_body=true
+cron "45 9 * * *" then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign.js") with tag="东证每日补签", timeout=60
+generic then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign.js") with tag="手动执行东证签到", timeout=60, img_url="checkmark.circle.system"
 
 [Mitm]
 hostname = mx.dzafc.cn
