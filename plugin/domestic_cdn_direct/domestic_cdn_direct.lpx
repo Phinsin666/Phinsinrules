@@ -58,6 +58,14 @@ zjcdn.com = server:https://dns.alidns.com/dns-query
 *.zjcdn.com = server:https://dns.alidns.com/dns-query
 bytednsdoc.com = server:https://dns.alidns.com/dns-query
 *.bytednsdoc.com = server:https://dns.alidns.com/dns-query
+byteimg.com = server:https://dns.alidns.com/dns-query
+*.byteimg.com = server:https://dns.alidns.com/dns-query
+bytedance.com = server:https://dns.alidns.com/dns-query
+*.bytedance.com = server:https://dns.alidns.com/dns-query
+bytetos.com = server:https://dns.alidns.com/dns-query
+*.bytetos.com = server:https://dns.alidns.com/dns-query
+iesdouyin.com = server:https://dns.alidns.com/dns-query
+*.iesdouyin.com = server:https://dns.alidns.com/dns-query
 
 [Rule]
 # 必须在主配置 FINAL 之前生效；插件规则会合并到主配置。
@@ -86,3 +94,7 @@ DOMAIN-SUFFIX,snssdk.com,DIRECT
 DOMAIN-SUFFIX,toutiao.com,DIRECT
 DOMAIN-SUFFIX,zjcdn.com,DIRECT
 DOMAIN-SUFFIX,bytednsdoc.com,DIRECT
+DOMAIN-SUFFIX,byteimg.com,DIRECT
+DOMAIN-SUFFIX,bytedance.com,DIRECT
+DOMAIN-SUFFIX,bytetos.com,DIRECT
+DOMAIN-SUFFIX,iesdouyin.com,DIRECT
