@@ -1,0 +1,38 @@
+# 国内 CDN/DNS 优化域名
+# 一行一个根域名；Loon 插件与 Mihomo 规则由此清单同步维护。
+# 更新日期：2026-11-17
+
+# 115 网盘
+115.com
+115cdn.com
+115cdn.net
+115img.com
+cdnhwcqgw115.com
+
+# 豆瓣
+douban.com
+doubanio.com
+
+# 小黑盒
+xiaoheihe.cn
+max-c.com
+zztfly.com
+
+# 少数派
+sspai.com
+
+# 抖音及字节系视频 CDN
+douyin.com
+amemv.com
+douyincdn.com
+douyinpic.com
+douyinstatic.com
+douyinvod.com
+idouyinvod.com
+ixigua.com
+ixiguavideo.com
+pstatp.com
+snssdk.com
+toutiao.com
+zjcdn.com
+bytednsdoc.com

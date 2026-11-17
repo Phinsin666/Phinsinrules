@@ -1,0 +1,88 @@
+#!name = 国内 CDN 与直连优化
+#!desc = 为已确认的国内网站指定阿里 DoH 并强制 DIRECT，改善 CDN 调度；不包含节点或订阅信息。
+#!author = Phinsin666
+#!homepage = https://github.com/Phinsin666/Phinsinrules
+#!system = iOS,iPadOS,macOS
+#!date = 2026-11-17
+#!type = normal
+
+[Host]
+# 国内加密 DNS；根域名与所有子域名均覆盖。
+115.com = server:https://dns.alidns.com/dns-query
+*.115.com = server:https://dns.alidns.com/dns-query
+115cdn.com = server:https://dns.alidns.com/dns-query
+*.115cdn.com = server:https://dns.alidns.com/dns-query
+115cdn.net = server:https://dns.alidns.com/dns-query
+*.115cdn.net = server:https://dns.alidns.com/dns-query
+115img.com = server:https://dns.alidns.com/dns-query
+*.115img.com = server:https://dns.alidns.com/dns-query
+cdnhwcqgw115.com = server:https://dns.alidns.com/dns-query
+*.cdnhwcqgw115.com = server:https://dns.alidns.com/dns-query
+douban.com = server:https://dns.alidns.com/dns-query
+*.douban.com = server:https://dns.alidns.com/dns-query
+doubanio.com = server:https://dns.alidns.com/dns-query
+*.doubanio.com = server:https://dns.alidns.com/dns-query
+xiaoheihe.cn = server:https://dns.alidns.com/dns-query
+*.xiaoheihe.cn = server:https://dns.alidns.com/dns-query
+max-c.com = server:https://dns.alidns.com/dns-query
+*.max-c.com = server:https://dns.alidns.com/dns-query
+zztfly.com = server:https://dns.alidns.com/dns-query
+*.zztfly.com = server:https://dns.alidns.com/dns-query
+sspai.com = server:https://dns.alidns.com/dns-query
+*.sspai.com = server:https://dns.alidns.com/dns-query
+douyin.com = server:https://dns.alidns.com/dns-query
+*.douyin.com = server:https://dns.alidns.com/dns-query
+amemv.com = server:https://dns.alidns.com/dns-query
+*.amemv.com = server:https://dns.alidns.com/dns-query
+douyincdn.com = server:https://dns.alidns.com/dns-query
+*.douyincdn.com = server:https://dns.alidns.com/dns-query
+douyinpic.com = server:https://dns.alidns.com/dns-query
+*.douyinpic.com = server:https://dns.alidns.com/dns-query
+douyinstatic.com = server:https://dns.alidns.com/dns-query
+*.douyinstatic.com = server:https://dns.alidns.com/dns-query
+douyinvod.com = server:https://dns.alidns.com/dns-query
+*.douyinvod.com = server:https://dns.alidns.com/dns-query
+idouyinvod.com = server:https://dns.alidns.com/dns-query
+*.idouyinvod.com = server:https://dns.alidns.com/dns-query
+ixigua.com = server:https://dns.alidns.com/dns-query
+*.ixigua.com = server:https://dns.alidns.com/dns-query
+ixiguavideo.com = server:https://dns.alidns.com/dns-query
+*.ixiguavideo.com = server:https://dns.alidns.com/dns-query
+pstatp.com = server:https://dns.alidns.com/dns-query
+*.pstatp.com = server:https://dns.alidns.com/dns-query
+snssdk.com = server:https://dns.alidns.com/dns-query
+*.snssdk.com = server:https://dns.alidns.com/dns-query
+toutiao.com = server:https://dns.alidns.com/dns-query
+*.toutiao.com = server:https://dns.alidns.com/dns-query
+zjcdn.com = server:https://dns.alidns.com/dns-query
+*.zjcdn.com = server:https://dns.alidns.com/dns-query
+bytednsdoc.com = server:https://dns.alidns.com/dns-query
+*.bytednsdoc.com = server:https://dns.alidns.com/dns-query
+
+[Rule]
+# 必须在主配置 FINAL 之前生效；插件规则会合并到主配置。
+DOMAIN-SUFFIX,115.com,DIRECT
+DOMAIN-SUFFIX,115cdn.com,DIRECT
+DOMAIN-SUFFIX,115cdn.net,DIRECT
+DOMAIN-SUFFIX,115img.com,DIRECT
+DOMAIN-SUFFIX,cdnhwcqgw115.com,DIRECT
+DOMAIN-SUFFIX,douban.com,DIRECT
+DOMAIN-SUFFIX,doubanio.com,DIRECT
+DOMAIN-SUFFIX,xiaoheihe.cn,DIRECT
+DOMAIN-SUFFIX,max-c.com,DIRECT
+DOMAIN-SUFFIX,zztfly.com,DIRECT
+DOMAIN-SUFFIX,sspai.com,DIRECT
+DOMAIN-SUFFIX,douyin.com,DIRECT
+DOMAIN-SUFFIX,amemv.com,DIRECT
+DOMAIN-SUFFIX,douyincdn.com,DIRECT
+DOMAIN-SUFFIX,douyinpic.com,DIRECT
+DOMAIN-SUFFIX,douyinstatic.com,DIRECT
+DOMAIN-SUFFIX,douyinvod.com,DIRECT
+DOMAIN-SUFFIX,idouyinvod.com,DIRECT
+DOMAIN-SUFFIX,ixigua.com,DIRECT
+DOMAIN-SUFFIX,ixiguavideo.com,DIRECT
+DOMAIN-SUFFIX,pstatp.com,DIRECT
+DOMAIN-SUFFIX,snssdk.com,DIRECT
+DOMAIN-SUFFIX,toutiao.com,DIRECT
+DOMAIN-SUFFIX,zjcdn.com,DIRECT
+DOMAIN-SUFFIX,bytednsdoc.com,DIRECT
