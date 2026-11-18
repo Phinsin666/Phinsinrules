@@ -1,6 +1,6 @@
 # 国内 CDN/DNS 优化域名
 # 一行一个根域名；Loon 插件与 Mihomo 规则由此清单同步维护。
-# 更新日期：2026-11-17
+# 更新日期：2026-11-18
 
 # 115 网盘
 115.com
@@ -40,3 +40,11 @@ byteimg.com
 bytedance.com
 bytetos.com
 iesdouyin.com
+
+# MG Live / 上汽车联
+ebanma.com
+z-onesoft.com
+saicmotor.com
+saicmg.com
+risingauto.com
+roewe.com.cn

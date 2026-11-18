@@ -3,7 +3,7 @@
 #!author = Phinsin666
 #!homepage = https://github.com/Phinsin666/Phinsinrules
 #!system = iOS,iPadOS,macOS
-#!date = 2026-11-17
+#!date = 2026-11-18
 #!type = normal
 
 [Host]
@@ -67,6 +67,19 @@ bytetos.com = server:https://dns.alidns.com/dns-query
 iesdouyin.com = server:https://dns.alidns.com/dns-query
 *.iesdouyin.com = server:https://dns.alidns.com/dns-query
 
+ebanma.com = server:https://dns.alidns.com/dns-query
+*.ebanma.com = server:https://dns.alidns.com/dns-query
+z-onesoft.com = server:https://dns.alidns.com/dns-query
+*.z-onesoft.com = server:https://dns.alidns.com/dns-query
+saicmotor.com = server:https://dns.alidns.com/dns-query
+*.saicmotor.com = server:https://dns.alidns.com/dns-query
+saicmg.com = server:https://dns.alidns.com/dns-query
+*.saicmg.com = server:https://dns.alidns.com/dns-query
+risingauto.com = server:https://dns.alidns.com/dns-query
+*.risingauto.com = server:https://dns.alidns.com/dns-query
+roewe.com.cn = server:https://dns.alidns.com/dns-query
+*.roewe.com.cn = server:https://dns.alidns.com/dns-query
+
 [Rule]
 # 必须在主配置 FINAL 之前生效；插件规则会合并到主配置。
 DOMAIN-SUFFIX,115.com,DIRECT
@@ -98,3 +111,9 @@ DOMAIN-SUFFIX,byteimg.com,DIRECT
 DOMAIN-SUFFIX,bytedance.com,DIRECT
 DOMAIN-SUFFIX,bytetos.com,DIRECT
 DOMAIN-SUFFIX,iesdouyin.com,DIRECT
+DOMAIN-SUFFIX,ebanma.com,DIRECT
+DOMAIN-SUFFIX,z-onesoft.com,DIRECT
+DOMAIN-SUFFIX,saicmotor.com,DIRECT
+DOMAIN-SUFFIX,saicmg.com,DIRECT
+DOMAIN-SUFFIX,risingauto.com,DIRECT
+DOMAIN-SUFFIX,roewe.com.cn,DIRECT

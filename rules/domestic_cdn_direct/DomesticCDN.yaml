@@ -1,5 +1,5 @@
 # 国内 CDN/DNS 优化域名（Mihomo rule-provider）
-# 更新日期：2026-11-17
+# 更新日期：2026-11-18
 payload:
   - '+.115.com'
   - '+.115cdn.com'
@@ -30,3 +30,9 @@ payload:
   - '+.bytedance.com'
   - '+.bytetos.com'
   - '+.iesdouyin.com'
+  - '+.ebanma.com'
+  - '+.z-onesoft.com'
+  - '+.saicmotor.com'
+  - '+.saicmg.com'
+  - '+.risingauto.com'
+  - '+.roewe.com.cn'
