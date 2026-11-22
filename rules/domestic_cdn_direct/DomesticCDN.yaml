@@ -1,5 +1,5 @@
 # 国内 CDN/DNS 优化域名（Mihomo rule-provider）
-# 更新日期：2026-11-18
+# 更新日期：2026-11-22
 payload:
   - '+.115.com'
   - '+.115cdn.com'
@@ -41,3 +41,5 @@ payload:
   - '+.meituan.com'
   - '+.meituan.net'
   - '+.myqcloud.com'
+  - '+.qianwen.com'
+  - '+.kimi.com'

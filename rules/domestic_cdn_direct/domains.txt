@@ -1,6 +1,6 @@
 # 国内 CDN/DNS 优化域名
 # 一行一个根域名；Loon 插件与 Mihomo 规则由此清单同步维护。
-# 更新日期：2026-11-18
+# 更新日期：2026-11-22
 
 # 115 网盘
 115.com
@@ -55,3 +55,7 @@ dpfile.com
 meituan.com
 meituan.net
 myqcloud.com
+
+# 千问 / Kimi
+qianwen.com
+kimi.com
