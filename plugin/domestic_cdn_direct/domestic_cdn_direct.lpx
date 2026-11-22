@@ -80,6 +80,17 @@ risingauto.com = server:https://dns.alidns.com/dns-query
 roewe.com.cn = server:https://dns.alidns.com/dns-query
 *.roewe.com.cn = server:https://dns.alidns.com/dns-query
 
+dianping.com = server:https://dns.alidns.com/dns-query
+*.dianping.com = server:https://dns.alidns.com/dns-query
+dpfile.com = server:https://dns.alidns.com/dns-query
+*.dpfile.com = server:https://dns.alidns.com/dns-query
+meituan.com = server:https://dns.alidns.com/dns-query
+*.meituan.com = server:https://dns.alidns.com/dns-query
+meituan.net = server:https://dns.alidns.com/dns-query
+*.meituan.net = server:https://dns.alidns.com/dns-query
+myqcloud.com = server:https://dns.alidns.com/dns-query
+*.myqcloud.com = server:https://dns.alidns.com/dns-query
+
 [Rule]
 # 必须在主配置 FINAL 之前生效；插件规则会合并到主配置。
 DOMAIN-SUFFIX,115.com,DIRECT
@@ -117,3 +128,8 @@ DOMAIN-SUFFIX,saicmotor.com,DIRECT
 DOMAIN-SUFFIX,saicmg.com,DIRECT
 DOMAIN-SUFFIX,risingauto.com,DIRECT
 DOMAIN-SUFFIX,roewe.com.cn,DIRECT
+DOMAIN-SUFFIX,dianping.com,DIRECT
+DOMAIN-SUFFIX,dpfile.com,DIRECT
+DOMAIN-SUFFIX,meituan.com,DIRECT
+DOMAIN-SUFFIX,meituan.net,DIRECT
+DOMAIN-SUFFIX,myqcloud.com,DIRECT

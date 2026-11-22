@@ -48,3 +48,10 @@ saicmotor.com
 saicmg.com
 risingauto.com
 roewe.com.cn
+
+# 大众点评 / 美团
+dianping.com
+dpfile.com
+meituan.com
+meituan.net
+myqcloud.com
