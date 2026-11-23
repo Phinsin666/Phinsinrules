@@ -3,7 +3,7 @@
 #!author = Phinsin666
 #!homepage = https://github.com/Phinsin666/Phinsinrules
 #!system = iOS,iPadOS,macOS
-#!date = 2026-11-22
+#!date = 2026-11-23
 #!type = normal
 
 [Host]
@@ -95,6 +95,89 @@ qianwen.com = server:https://dns.alidns.com/dns-query
 kimi.com = server:https://dns.alidns.com/dns-query
 *.kimi.com = server:https://dns.alidns.com/dns-query
 
+126.com = server:https://dns.alidns.com/dns-query
+*.126.com = server:https://dns.alidns.com/dns-query
+126.net = server:https://dns.alidns.com/dns-query
+*.126.net = server:https://dns.alidns.com/dns-query
+163.com = server:https://dns.alidns.com/dns-query
+*.163.com = server:https://dns.alidns.com/dns-query
+360buyimg.com = server:https://dns.alidns.com/dns-query
+*.360buyimg.com = server:https://dns.alidns.com/dns-query
+alicdn.com = server:https://dns.alidns.com/dns-query
+*.alicdn.com = server:https://dns.alidns.com/dns-query
+alipay.com = server:https://dns.alidns.com/dns-query
+*.alipay.com = server:https://dns.alidns.com/dns-query
+alipayobjects.com = server:https://dns.alidns.com/dns-query
+*.alipayobjects.com = server:https://dns.alidns.com/dns-query
+aliyun.com = server:https://dns.alidns.com/dns-query
+*.aliyun.com = server:https://dns.alidns.com/dns-query
+amap.com = server:https://dns.alidns.com/dns-query
+*.amap.com = server:https://dns.alidns.com/dns-query
+autonavi.com = server:https://dns.alidns.com/dns-query
+*.autonavi.com = server:https://dns.alidns.com/dns-query
+baidu.com = server:https://dns.alidns.com/dns-query
+*.baidu.com = server:https://dns.alidns.com/dns-query
+bdstatic.com = server:https://dns.alidns.com/dns-query
+*.bdstatic.com = server:https://dns.alidns.com/dns-query
+bilibili.com = server:https://dns.alidns.com/dns-query
+*.bilibili.com = server:https://dns.alidns.com/dns-query
+bilivideo.com = server:https://dns.alidns.com/dns-query
+*.bilivideo.com = server:https://dns.alidns.com/dns-query
+deepseek.com = server:https://dns.alidns.com/dns-query
+*.deepseek.com = server:https://dns.alidns.com/dns-query
+gtimg.com = server:https://dns.alidns.com/dns-query
+*.gtimg.com = server:https://dns.alidns.com/dns-query
+hdslb.com = server:https://dns.alidns.com/dns-query
+*.hdslb.com = server:https://dns.alidns.com/dns-query
+hicloud.com = server:https://dns.alidns.com/dns-query
+*.hicloud.com = server:https://dns.alidns.com/dns-query
+huawei.com = server:https://dns.alidns.com/dns-query
+*.huawei.com = server:https://dns.alidns.com/dns-query
+iqiyi.com = server:https://dns.alidns.com/dns-query
+*.iqiyi.com = server:https://dns.alidns.com/dns-query
+iqiyipic.com = server:https://dns.alidns.com/dns-query
+*.iqiyipic.com = server:https://dns.alidns.com/dns-query
+jd.com = server:https://dns.alidns.com/dns-query
+*.jd.com = server:https://dns.alidns.com/dns-query
+mi.com = server:https://dns.alidns.com/dns-query
+*.mi.com = server:https://dns.alidns.com/dns-query
+netease.com = server:https://dns.alidns.com/dns-query
+*.netease.com = server:https://dns.alidns.com/dns-query
+pddpic.com = server:https://dns.alidns.com/dns-query
+*.pddpic.com = server:https://dns.alidns.com/dns-query
+pinduoduo.com = server:https://dns.alidns.com/dns-query
+*.pinduoduo.com = server:https://dns.alidns.com/dns-query
+qq.com = server:https://dns.alidns.com/dns-query
+*.qq.com = server:https://dns.alidns.com/dns-query
+qy.net = server:https://dns.alidns.com/dns-query
+*.qy.net = server:https://dns.alidns.com/dns-query
+sina.com = server:https://dns.alidns.com/dns-query
+*.sina.com = server:https://dns.alidns.com/dns-query
+taobao.com = server:https://dns.alidns.com/dns-query
+*.taobao.com = server:https://dns.alidns.com/dns-query
+tmall.com = server:https://dns.alidns.com/dns-query
+*.tmall.com = server:https://dns.alidns.com/dns-query
+wechat.com = server:https://dns.alidns.com/dns-query
+*.wechat.com = server:https://dns.alidns.com/dns-query
+weibo.com = server:https://dns.alidns.com/dns-query
+*.weibo.com = server:https://dns.alidns.com/dns-query
+xhscdn.com = server:https://dns.alidns.com/dns-query
+*.xhscdn.com = server:https://dns.alidns.com/dns-query
+xiaohongshu.com = server:https://dns.alidns.com/dns-query
+*.xiaohongshu.com = server:https://dns.alidns.com/dns-query
+xiaomi.com = server:https://dns.alidns.com/dns-query
+*.xiaomi.com = server:https://dns.alidns.com/dns-query
+xiaoyuzhoufm.com = server:https://dns.alidns.com/dns-query
+*.xiaoyuzhoufm.com = server:https://dns.alidns.com/dns-query
+yangkeduo.com = server:https://dns.alidns.com/dns-query
+*.yangkeduo.com = server:https://dns.alidns.com/dns-query
+zhihu.com = server:https://dns.alidns.com/dns-query
+*.zhihu.com = server:https://dns.alidns.com/dns-query
+zhimg.com = server:https://dns.alidns.com/dns-query
+*.zhimg.com = server:https://dns.alidns.com/dns-query
+zhongguose.com = server:https://dns.alidns.com/dns-query
+*.zhongguose.com = server:https://dns.alidns.com/dns-query
+
 [Rule]
 # 必须在主配置 FINAL 之前生效；插件规则会合并到主配置。
 DOMAIN-SUFFIX,115.com,DIRECT
@@ -139,3 +222,44 @@ DOMAIN-SUFFIX,meituan.net,DIRECT
 DOMAIN-SUFFIX,myqcloud.com,DIRECT
 DOMAIN-SUFFIX,qianwen.com,DIRECT
 DOMAIN-SUFFIX,kimi.com,DIRECT
+DOMAIN-SUFFIX,126.com,DIRECT
+DOMAIN-SUFFIX,126.net,DIRECT
+DOMAIN-SUFFIX,163.com,DIRECT
+DOMAIN-SUFFIX,360buyimg.com,DIRECT
+DOMAIN-SUFFIX,alicdn.com,DIRECT
+DOMAIN-SUFFIX,alipay.com,DIRECT
+DOMAIN-SUFFIX,alipayobjects.com,DIRECT
+DOMAIN-SUFFIX,aliyun.com,DIRECT
+DOMAIN-SUFFIX,amap.com,DIRECT
+DOMAIN-SUFFIX,autonavi.com,DIRECT
+DOMAIN-SUFFIX,baidu.com,DIRECT
+DOMAIN-SUFFIX,bdstatic.com,DIRECT
+DOMAIN-SUFFIX,bilibili.com,DIRECT
+DOMAIN-SUFFIX,bilivideo.com,DIRECT
+DOMAIN-SUFFIX,deepseek.com,DIRECT
+DOMAIN-SUFFIX,gtimg.com,DIRECT
+DOMAIN-SUFFIX,hdslb.com,DIRECT
+DOMAIN-SUFFIX,hicloud.com,DIRECT
+DOMAIN-SUFFIX,huawei.com,DIRECT
+DOMAIN-SUFFIX,iqiyi.com,DIRECT
+DOMAIN-SUFFIX,iqiyipic.com,DIRECT
+DOMAIN-SUFFIX,jd.com,DIRECT
+DOMAIN-SUFFIX,mi.com,DIRECT
+DOMAIN-SUFFIX,netease.com,DIRECT
+DOMAIN-SUFFIX,pddpic.com,DIRECT
+DOMAIN-SUFFIX,pinduoduo.com,DIRECT
+DOMAIN-SUFFIX,qq.com,DIRECT
+DOMAIN-SUFFIX,qy.net,DIRECT
+DOMAIN-SUFFIX,sina.com,DIRECT
+DOMAIN-SUFFIX,taobao.com,DIRECT
+DOMAIN-SUFFIX,tmall.com,DIRECT
+DOMAIN-SUFFIX,wechat.com,DIRECT
+DOMAIN-SUFFIX,weibo.com,DIRECT
+DOMAIN-SUFFIX,xhscdn.com,DIRECT
+DOMAIN-SUFFIX,xiaohongshu.com,DIRECT
+DOMAIN-SUFFIX,xiaomi.com,DIRECT
+DOMAIN-SUFFIX,xiaoyuzhoufm.com,DIRECT
+DOMAIN-SUFFIX,yangkeduo.com,DIRECT
+DOMAIN-SUFFIX,zhihu.com,DIRECT
+DOMAIN-SUFFIX,zhimg.com,DIRECT
+DOMAIN-SUFFIX,zhongguose.com,DIRECT
