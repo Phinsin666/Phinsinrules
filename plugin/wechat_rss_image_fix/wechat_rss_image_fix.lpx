@@ -10,7 +10,7 @@
 [Rewrite]
 # 例：http://img2.jintiankansha.me/get?src=http://mmbiz.qpic.cn/...
 # 还原为：https://mmbiz.qpic.cn/...
-request if ${url} ~= /^http:\/\/img2\.jintiankansha\.me\/get\?src=https?:\/\/(.*)$/ as imageUrl then url.replace("https://${imageUrl.1}")
+request if ${url} ~= /^http:\/\/img2\.jintiankansha\.me\/get\?src=https?:\/\/(.*)$/ as imageUrl then redirect(302, "https://${imageUrl.1}")
 
 [Rule]
 # 原图使用微信 CDN 直连，避免受兜底代理策略影响。
