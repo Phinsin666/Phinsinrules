@@ -1,5 +1,15 @@
 # Phinsin个人自用配置
 
+## 微信 RSS 图片修复
+
+用于修复 NetNewsWire 等原样渲染 RSS 内容的阅读器中，搜狗微信订阅图片因
+`img2.jintiankansha.me` 返回 403 而无法显示的问题。插件会从失效代理 URL
+中提取 `mmbiz.qpic.cn` 原图地址并升级为 HTTPS，无需 MitM。
+
+```text
+https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/wechat_rss_image_fix/wechat_rss_image_fix.lpx
+```
+
 ## 国内 CDN 与直连优化
 
 用于修复国内网站虽然直连、但因 DNS/CDN 调度或规则遗漏而绕行境外节点的问题。规则不包含节点、订阅地址或密钥。

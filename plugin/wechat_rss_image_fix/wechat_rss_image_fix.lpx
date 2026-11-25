@@ -1,0 +1,17 @@
+#!name = 微信 RSS 图片修复
+#!desc = 绕过失效的 jintiankansha.me 图片代理，将搜狗微信 RSS 中的图片还原为微信原图；无需 MitM。
+#!author = Phinsin666
+#!homepage = https://github.com/Phinsin666/Phinsinrules/tree/main/plugin/wechat_rss_image_fix
+#!system = iOS,iPadOS,macOS
+#!loon_version = 3.5.1(978)
+#!date = 2026-11-25
+#!type = normal
+
+[Rewrite]
+# 例：http://img2.jintiankansha.me/get?src=http://mmbiz.qpic.cn/...
+# 还原为：https://mmbiz.qpic.cn/...
+request if ${url} ~= /^http:\/\/img2\.jintiankansha\.me\/get\?src=https?:\/\/(.*)$/ as imageUrl then url.replace("https://${imageUrl.1}")
+
+[Rule]
+# 原图使用微信 CDN 直连，避免受兜底代理策略影响。
+DOMAIN,mmbiz.qpic.cn,DIRECT
