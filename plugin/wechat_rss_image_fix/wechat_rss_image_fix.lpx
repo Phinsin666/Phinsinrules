@@ -1,5 +1,5 @@
 #!name = 微信 RSS 图片修复
-#!desc = 绕过失效的 jintiankansha.me 图片代理，将搜狗微信 RSS 中的图片还原为微信原图；无需 MitM。
+#!desc = 绕过失效的 jintiankansha.me 图片代理并移除防盗链 Referer，将搜狗微信 RSS 中的图片还原为微信原图；无需 MitM。
 #!author = Phinsin666
 #!homepage = https://github.com/Phinsin666/Phinsinrules/tree/main/plugin/wechat_rss_image_fix
 #!system = iOS,iPadOS,macOS
@@ -9,8 +9,10 @@
 
 [Rewrite]
 # 例：http://img2.jintiankansha.me/get?src=http://mmbiz.qpic.cn/...
-# 还原为：https://mmbiz.qpic.cn/...
-request if ${url} ~= /^http:\/\/img2\.jintiankansha\.me\/get\?src=https?:\/\/(.*)$/ as imageUrl then redirect(302, "https://${imageUrl.1}")
+# 先重定向到微信原图，再移除会触发防盗链占位图的搜狗 Referer。
+# 保持第二跳为 HTTP，Loon 无需 MitM 即可修改请求头。
+request if ${url} ~= /^http:\/\/img2\.jintiankansha\.me\/get\?src=https?:\/\/(.*)$/ as imageUrl then redirect(302, "http://${imageUrl.1}")
+request if ${url} ~= /^http:\/\/mmbiz\.qpic\.cn\// then request.header.del("Referer")
 
 [Rule]
 # 原图使用微信 CDN 直连，避免受兜底代理策略影响。

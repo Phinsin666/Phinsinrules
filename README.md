@@ -4,7 +4,8 @@
 
 用于修复 NetNewsWire 等原样渲染 RSS 内容的阅读器中，搜狗微信订阅图片因
 `img2.jintiankansha.me` 返回 403 而无法显示的问题。插件会从失效代理 URL
-中提取 `mmbiz.qpic.cn` 原图地址并升级为 HTTPS，无需 MitM。
+中提取 `mmbiz.qpic.cn` 原图地址，并移除会触发微信防盗链占位图的 Referer，
+无需 MitM。
 
 ```text
 https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/wechat_rss_image_fix/wechat_rss_image_fix.lpx
