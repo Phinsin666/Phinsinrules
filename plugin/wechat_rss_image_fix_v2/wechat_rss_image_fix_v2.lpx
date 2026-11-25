@@ -1,0 +1,19 @@
+#!name = 微信 RSS 图片修复 v2
+#!desc = 绕过失效图片代理并移除微信防盗链 Referer，恢复搜狗微信 RSS 原图；无需 MitM。
+#!author = Phinsin666
+#!homepage = https://github.com/Phinsin666/Phinsinrules/tree/main/plugin/wechat_rss_image_fix_v2
+#!system = iOS,iPadOS,macOS
+#!loon_version = 3.5.1(978)
+#!date = 2026-11-25 18:24
+#!type = normal
+
+[Rewrite]
+# 第一跳：让阅读器从失效代理跳转到微信图片 CDN。
+request if ${url} ~= /^http:\/\/img2\.jintiankansha\.me\/get\?src=https?:\/\/(.*)$/ as imageUrl then redirect(302, "http://${imageUrl.1}")
+
+# 第二跳：删除搜狗 Referer，否则微信 CDN 会返回“未经允许不可引用”占位图。
+# 保持 HTTP 以便在不启用 MitM 的情况下安全修改请求头。
+request if ${url} ~= /^http:\/\/mmbiz\.qpic\.cn\// then request.header.del("Referer")
+
+[Rule]
+DOMAIN,mmbiz.qpic.cn,DIRECT

@@ -8,7 +8,7 @@
 无需 MitM。
 
 ```text
-https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/wechat_rss_image_fix/wechat_rss_image_fix.lpx
+https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/wechat_rss_image_fix_v2/wechat_rss_image_fix_v2.lpx
 ```
 
 ## 国内 CDN 与直连优化
