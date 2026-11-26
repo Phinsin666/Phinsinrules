@@ -3,7 +3,7 @@
 #!author = Phinsin666
 #!homepage = https://github.com/Phinsin666/Phinsinrules
 #!system = iOS,iPadOS,macOS
-#!date = 2026-11-23
+#!date = 2026-11-26
 #!type = normal
 
 [Host]
@@ -66,6 +66,12 @@ bytetos.com = server:https://dns.alidns.com/dns-query
 *.bytetos.com = server:https://dns.alidns.com/dns-query
 iesdouyin.com = server:https://dns.alidns.com/dns-query
 *.iesdouyin.com = server:https://dns.alidns.com/dns-query
+volces.com = server:https://dns.alidns.com/dns-query
+*.volces.com = server:https://dns.alidns.com/dns-query
+bytescm.com = server:https://dns.alidns.com/dns-query
+*.bytescm.com = server:https://dns.alidns.com/dns-query
+zijieapi.com = server:https://dns.alidns.com/dns-query
+*.zijieapi.com = server:https://dns.alidns.com/dns-query
 
 ebanma.com = server:https://dns.alidns.com/dns-query
 *.ebanma.com = server:https://dns.alidns.com/dns-query
@@ -95,6 +101,15 @@ qianwen.com = server:https://dns.alidns.com/dns-query
 kimi.com = server:https://dns.alidns.com/dns-query
 *.kimi.com = server:https://dns.alidns.com/dns-query
 
+10010.com = server:https://dns.alidns.com/dns-query
+*.10010.com = server:https://dns.alidns.com/dns-query
+10010.cn = server:https://dns.alidns.com/dns-query
+*.10010.cn = server:https://dns.alidns.com/dns-query
+chinaunicom.cn = server:https://dns.alidns.com/dns-query
+*.chinaunicom.cn = server:https://dns.alidns.com/dns-query
+unicompayment.com = server:https://dns.alidns.com/dns-query
+*.unicompayment.com = server:https://dns.alidns.com/dns-query
+
 126.com = server:https://dns.alidns.com/dns-query
 *.126.com = server:https://dns.alidns.com/dns-query
 126.net = server:https://dns.alidns.com/dns-query
@@ -111,6 +126,8 @@ alipayobjects.com = server:https://dns.alidns.com/dns-query
 *.alipayobjects.com = server:https://dns.alidns.com/dns-query
 aliyun.com = server:https://dns.alidns.com/dns-query
 *.aliyun.com = server:https://dns.alidns.com/dns-query
+aliyuncs.com = server:https://dns.alidns.com/dns-query
+*.aliyuncs.com = server:https://dns.alidns.com/dns-query
 amap.com = server:https://dns.alidns.com/dns-query
 *.amap.com = server:https://dns.alidns.com/dns-query
 autonavi.com = server:https://dns.alidns.com/dns-query
@@ -209,6 +226,9 @@ DOMAIN-SUFFIX,byteimg.com,DIRECT
 DOMAIN-SUFFIX,bytedance.com,DIRECT
 DOMAIN-SUFFIX,bytetos.com,DIRECT
 DOMAIN-SUFFIX,iesdouyin.com,DIRECT
+DOMAIN-SUFFIX,volces.com,DIRECT
+DOMAIN-SUFFIX,bytescm.com,DIRECT
+DOMAIN-SUFFIX,zijieapi.com,DIRECT
 DOMAIN-SUFFIX,ebanma.com,DIRECT
 DOMAIN-SUFFIX,z-onesoft.com,DIRECT
 DOMAIN-SUFFIX,saicmotor.com,DIRECT
@@ -222,6 +242,10 @@ DOMAIN-SUFFIX,meituan.net,DIRECT
 DOMAIN-SUFFIX,myqcloud.com,DIRECT
 DOMAIN-SUFFIX,qianwen.com,DIRECT
 DOMAIN-SUFFIX,kimi.com,DIRECT
+DOMAIN-SUFFIX,10010.com,DIRECT
+DOMAIN-SUFFIX,10010.cn,DIRECT
+DOMAIN-SUFFIX,chinaunicom.cn,DIRECT
+DOMAIN-SUFFIX,unicompayment.com,DIRECT
 DOMAIN-SUFFIX,126.com,DIRECT
 DOMAIN-SUFFIX,126.net,DIRECT
 DOMAIN-SUFFIX,163.com,DIRECT
@@ -230,6 +254,7 @@ DOMAIN-SUFFIX,alicdn.com,DIRECT
 DOMAIN-SUFFIX,alipay.com,DIRECT
 DOMAIN-SUFFIX,alipayobjects.com,DIRECT
 DOMAIN-SUFFIX,aliyun.com,DIRECT
+DOMAIN-SUFFIX,aliyuncs.com,DIRECT
 DOMAIN-SUFFIX,amap.com,DIRECT
 DOMAIN-SUFFIX,autonavi.com,DIRECT
 DOMAIN-SUFFIX,baidu.com,DIRECT

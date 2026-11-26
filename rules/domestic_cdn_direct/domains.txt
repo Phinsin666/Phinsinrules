@@ -1,6 +1,6 @@
 # 国内 CDN/DNS 优化域名
 # 一行一个根域名；Loon 插件与 Mihomo 规则由此清单同步维护。
-# 更新日期：2026-11-23
+# 更新日期：2026-11-26
 
 # 115 网盘
 115.com
@@ -40,6 +40,9 @@ byteimg.com
 bytedance.com
 bytetos.com
 iesdouyin.com
+volces.com
+bytescm.com
+zijieapi.com
 
 # MG Live / 上汽车联
 ebanma.com
@@ -60,6 +63,12 @@ myqcloud.com
 qianwen.com
 kimi.com
 
+# 中国联通
+10010.com
+10010.cn
+chinaunicom.cn
+unicompayment.com
+
 # 常用国内服务与 CDN
 126.com
 126.net
@@ -69,6 +78,7 @@ alicdn.com
 alipay.com
 alipayobjects.com
 aliyun.com
+aliyuncs.com
 amap.com
 autonavi.com
 baidu.com

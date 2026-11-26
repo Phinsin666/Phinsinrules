@@ -1,5 +1,5 @@
 # 国内 CDN/DNS 优化域名（Mihomo rule-provider）
-# 更新日期：2026-11-23
+# 更新日期：2026-11-26
 payload:
   - '+.115.com'
   - '+.115cdn.com'
@@ -30,6 +30,9 @@ payload:
   - '+.bytedance.com'
   - '+.bytetos.com'
   - '+.iesdouyin.com'
+  - '+.volces.com'
+  - '+.bytescm.com'
+  - '+.zijieapi.com'
   - '+.ebanma.com'
   - '+.z-onesoft.com'
   - '+.saicmotor.com'
@@ -43,6 +46,10 @@ payload:
   - '+.myqcloud.com'
   - '+.qianwen.com'
   - '+.kimi.com'
+  - '+.10010.com'
+  - '+.10010.cn'
+  - '+.chinaunicom.cn'
+  - '+.unicompayment.com'
   - '+.126.com'
   - '+.126.net'
   - '+.163.com'
@@ -51,6 +58,7 @@ payload:
   - '+.alipay.com'
   - '+.alipayobjects.com'
   - '+.aliyun.com'
+  - '+.aliyuncs.com'
   - '+.amap.com'
   - '+.autonavi.com'
   - '+.baidu.com'
