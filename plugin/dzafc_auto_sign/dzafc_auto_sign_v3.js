@@ -2,25 +2,22 @@
  * 东证小程序签到（Loon）
  *
  * 用法：
- * 1. 作为 authentication / refresh 接口的 Response Script 运行时，保存访问令牌、refreshToken 与 Cookie；
- * 2. 作为 sign/status 的 Response Script 运行时，增量更新 Header，避免覆盖已有 refreshToken 与 Cookie；
- * 3. 作为 Cron / Generic Script 运行时，使用持久化的登录态签到；若 accessToken 过期，优先尝试自动续期后重试。
+ * 1. 作为 authentication 接口的 Response Script 运行时，保存 accessToken、refreshToken、openId、appId 与账号 Header；
+ * 2. 作为 sign/status 的 Response Script 运行时，增量更新 Header，避免覆盖已有 openId / refreshToken / Cookie；
+ * 3. 作为 Cron / Generic Script 运行时，使用持久化的登录态签到；若短期 accessToken（6 小时有效）过期，
+ *    自动调用 /api/pie/v1/wechat/miniapp/token（使用永久不变的 openId + appId + X-Account-Id）换取新令牌并重试签到。
  *
  * 账号信息只写入 Loon 的本地 persistentStore，不写在脚本源码中。
  */
 
 var STORE_KEY = "dzafc.auto_sign.auth.v1";
 var API_ROOT = "https://mx.dzafc.cn";
+var DEFAULT_APP_ID = "wx74ec8aa8f0b8a3d5";
 var STATUS_URL = API_ROOT + "/api/iris/v1/sign/status";
 var SIGN_URL = API_ROOT + "/api/iris/v1/sign/daily";
+var MINIAPP_TOKEN_URL = API_ROOT + "/api/pie/v1/wechat/miniapp/token";
 var AUTH_PATH = "/api/pie/v1/wechat/miniapp/authentication";
 var STATUS_PATH = "/api/iris/v1/sign/status";
-var REFRESH_CANDIDATES = [
-  API_ROOT + "/api/pie/v1/wechat/miniapp/authentication/refresh",
-  API_ROOT + "/api/pie/v1/wechat/miniapp/refresh",
-  API_ROOT + "/api/pie/v1/auth/refresh",
-  API_ROOT + "/api/pie/v1/token/refresh"
-];
 
 var SCRIPT_ARGS = (typeof $argument !== "undefined" && $argument && typeof $argument === "object") ? $argument : {};
 
@@ -86,6 +83,9 @@ function storeAuthentication(patch, silent) {
     accountId: pickNonEmpty(patch.accountId, previous.accountId, ""),
     ownerId: pickNonEmpty(patch.ownerId, previous.ownerId, ""),
     deviceId: pickNonEmpty(patch.deviceId, previous.deviceId, ""),
+    openId: pickNonEmpty(patch.openId, previous.openId, ""),
+    unionId: pickNonEmpty(patch.unionId, previous.unionId, ""),
+    appId: pickNonEmpty(patch.appId, previous.appId, DEFAULT_APP_ID),
     client: pickNonEmpty(patch.client, previous.client, "3"),
     clientVersion: pickNonEmpty(patch.clientVersion, previous.clientVersion, ""),
     userAgent: pickNonEmpty(patch.userAgent, previous.userAgent, "Mozilla/5.0"),
@@ -111,9 +111,14 @@ function storeAuthentication(patch, silent) {
   }
 
   var saved = $persistentStore.write(JSON.stringify(merged), STORE_KEY);
-  logDebug("storeAuthentication saved=" + saved + " hasRefresh=" + Boolean(merged.refreshToken) + " hasCookie=" + Boolean(merged.cookie));
+  logDebug(
+    "storeAuthentication saved=" + saved +
+    " hasOpenId=" + Boolean(merged.openId) +
+    " hasRefresh=" + Boolean(merged.refreshToken) +
+    " hasCookie=" + Boolean(merged.cookie)
+  );
   if (saved && shouldNotify) {
-    var extra = merged.refreshToken ? "（含 refreshToken，支持自动续期）" : "（未返回 refreshToken，仅短期 Token）";
+    var extra = merged.openId ? "（含 openId，支持自动换取新 Token）" : "（未获取到 openId，请重新进入小程序首页）";
     notify("登录凭据已获取", "凭据已保存到 Loon 本机" + extra);
   }
   return saved;
@@ -129,6 +134,22 @@ function extractCookieFromResponse(headers) {
     .join("; ");
 }
 
+function extractTokenFromData(data) {
+  if (!data) return { accessToken: "", refreshToken: "" };
+  if (typeof data === "string") {
+    return { accessToken: data, refreshToken: "" };
+  }
+  if (typeof data === "object") {
+    var access = data.accessToken || data.token || "";
+    var refresh = data.refreshToken || "";
+    return {
+      accessToken: access ? String(access) : "",
+      refreshToken: refresh ? String(refresh) : ""
+    };
+  }
+  return { accessToken: "", refreshToken: "" };
+}
+
 function saveAuthentication() {
   var response = parseJSON($response.body);
   var data = response && response.data;
@@ -140,6 +161,7 @@ function saveAuthentication() {
 
   var sourceHeaders = $request.headers || {};
   var resHeaders = $response.headers || {};
+  var reqBody = (typeof $request.body === "string" && $request.body) ? parseJSON($request.body) : null;
   var cookie = headerValue(sourceHeaders, "cookie") || extractCookieFromResponse(resHeaders);
 
   var authPatch = {
@@ -148,6 +170,9 @@ function saveAuthentication() {
     accountId: String(data.accountId || headerValue(sourceHeaders, "x-account-id") || ""),
     ownerId: String(data.ownerId || headerValue(sourceHeaders, "x-owner-id") || ""),
     deviceId: String(headerValue(sourceHeaders, "x-device-id") || ""),
+    openId: String(data.openId || data.openid || ""),
+    unionId: String(data.unionId || data.unionid || ""),
+    appId: String((reqBody && (reqBody.appId || reqBody.appid)) || DEFAULT_APP_ID),
     client: String(headerValue(sourceHeaders, "x-client") || "3"),
     clientVersion: String(headerValue(sourceHeaders, "x-client-version") || ""),
     userAgent: String(headerValue(sourceHeaders, "user-agent") || "Mozilla/5.0"),
@@ -166,7 +191,8 @@ function saveAuthentication() {
 function saveRefreshContext() {
   var response = parseJSON($response.body);
   var data = response && response.data;
-  if (!response || String(response.code) !== "0" || !data || !data.accessToken) {
+  var tokens = extractTokenFromData(data);
+  if (!response || String(response.code) !== "0" || !tokens.accessToken) {
     return false;
   }
 
@@ -176,11 +202,13 @@ function saveRefreshContext() {
   var reqUrl = ($request.url || "").split("?")[0];
 
   var patch = {
-    accessToken: String(data.accessToken),
-    refreshToken: String(data.refreshToken || ""),
-    accountId: String(data.accountId || headerValue(sourceHeaders, "x-account-id") || ""),
-    ownerId: String(data.ownerId || headerValue(sourceHeaders, "x-owner-id") || ""),
+    accessToken: tokens.accessToken,
+    refreshToken: tokens.refreshToken,
+    accountId: String((data && data.accountId) || headerValue(sourceHeaders, "x-account-id") || ""),
+    ownerId: String((data && data.ownerId) || headerValue(sourceHeaders, "x-owner-id") || ""),
     deviceId: String(headerValue(sourceHeaders, "x-device-id") || ""),
+    openId: String((data && (data.openId || data.openid)) || ""),
+    unionId: String((data && (data.unionId || data.unionid)) || ""),
     client: String(headerValue(sourceHeaders, "x-client") || ""),
     clientVersion: String(headerValue(sourceHeaders, "x-client-version") || ""),
     userAgent: String(headerValue(sourceHeaders, "user-agent") || ""),
@@ -191,7 +219,7 @@ function saveRefreshContext() {
     refreshBody: (typeof $request.body === "string" && $request.body) ? $request.body : ""
   };
 
-  logDebug("Captured refresh endpoint: " + patch.refreshMethod + " " + patch.refreshUrl);
+  logDebug("Captured token endpoint: " + patch.refreshMethod + " " + patch.refreshUrl);
   return storeAuthentication(patch, true);
 }
 
@@ -215,11 +243,11 @@ function saveAuthenticationFromRequest() {
     return false;
   }
 
-  // 增量合并，保留已保存的 refreshToken / refreshUrl / Cookie
+  // 增量合并，保留已保存的 openId / appId / refreshToken / Cookie
   return storeAuthentication(authPatch, Boolean(previous.accessToken === authPatch.accessToken));
 }
 
-function requestHeaders(auth, withBody) {
+function requestHeaders(auth, withBody, overrides) {
   var headers = {
     "Accept": "application/json, text/plain, */*",
     "X-Account-Id": auth.accountId,
@@ -242,6 +270,13 @@ function requestHeaders(auth, withBody) {
     headers["Content-Type"] = "application/json";
     headers["Origin"] = API_ROOT;
   }
+
+  if (overrides && typeof overrides === "object") {
+    var keys = Object.keys(overrides);
+    for (var i = 0; i < keys.length; i += 1) {
+      headers[keys[i]] = overrides[keys[i]];
+    }
+  }
   return headers;
 }
 
@@ -253,11 +288,28 @@ function finish(isHTTPContext) {
 function buildRefreshTargets(auth) {
   var targets = [];
   var customUrl = SCRIPT_ARGS.refreshUrl ? String(SCRIPT_ARGS.refreshUrl).trim() : "";
+
   if (customUrl) {
-    targets.push({ url: customUrl, method: "POST", body: JSON.stringify({ refreshToken: auth.refreshToken }) });
+    targets.push({
+      url: customUrl,
+      method: "POST",
+      body: JSON.stringify({ refreshToken: auth.refreshToken || "" })
+    });
   }
-  if (auth.refreshUrl) {
-    var bodyStr = JSON.stringify({ refreshToken: auth.refreshToken });
+
+  // 优先使用从前端代码确认的接口：GET /api/pie/v1/wechat/miniapp/token?openid=...&appid=...
+  if (auth.openId) {
+    var appId = auth.appId || DEFAULT_APP_ID;
+    var query = "openid=" + encodeURIComponent(auth.openId) + "&appid=" + encodeURIComponent(appId);
+    targets.push({
+      url: MINIAPP_TOKEN_URL + "?" + query,
+      method: "GET",
+      headerOverrides: { "X-Client": "5" }
+    });
+  }
+
+  if (auth.refreshUrl && auth.refreshUrl !== customUrl && auth.refreshUrl !== MINIAPP_TOKEN_URL) {
+    var bodyStr = JSON.stringify({ refreshToken: auth.refreshToken || "" });
     if (auth.refreshBody) {
       var parsedBody = parseJSON(auth.refreshBody);
       if (parsedBody && typeof parsedBody === "object") {
@@ -272,58 +324,63 @@ function buildRefreshTargets(auth) {
       body: bodyStr
     });
   }
-  for (var i = 0; i < REFRESH_CANDIDATES.length; i += 1) {
-    var url = REFRESH_CANDIDATES[i];
-    if (url !== customUrl && url !== auth.refreshUrl) {
-      targets.push({ url: url, method: "POST", body: JSON.stringify({ refreshToken: auth.refreshToken }) });
-    }
-  }
+
   return targets;
 }
 
 function refreshAuthentication(auth, callback) {
-  if (!auth || !auth.refreshToken) {
-    callback(false, null, "本地未保存 refreshToken");
+  var targets = buildRefreshTargets(auth);
+  if (!targets.length) {
+    callback(false, null, "本地未保存 openId 或刷新接口，请打开一次微信小程序");
     return;
   }
 
-  var targets = buildRefreshTargets(auth);
   var index = 0;
 
   function tryNext(lastReason) {
     if (index >= targets.length) {
-      callback(false, null, lastReason || "刷新接口不可用");
+      callback(false, null, lastReason || "令牌续期失败");
       return;
     }
 
     var target = targets[index];
     index += 1;
-    var method = (target.method || "POST").toLowerCase();
-    var sender = $httpClient[method] || $httpClient.post;
+    var method = (target.method || "GET").toLowerCase();
+    var sender = $httpClient[method] || $httpClient.get;
     logDebug("Trying refresh (" + index + "/" + targets.length + "): " + target.method + " " + target.url);
 
-    sender({
+    var options = {
       url: target.url,
-      headers: requestHeaders(auth, method !== "get"),
-      body: method === "get" ? undefined : target.body,
+      headers: requestHeaders(auth, method !== "get", target.headerOverrides),
       timeout: 15000
-    }, function (error, response, body) {
+    };
+    if (method !== "get" && typeof target.body !== "undefined") {
+      options.body = target.body;
+    }
+
+    sender(options, function (error, response, body) {
       if (error) {
+        logDebug("Refresh error: " + String(error));
         tryNext(String(error));
         return;
       }
 
       var statusCode = response && (response.status || response.statusCode);
       var result = parseJSON(body);
-      var data = result && result.data;
-      if (statusCode === 200 && result && String(result.code) === "0" && data && data.accessToken) {
+      var tokens = extractTokenFromData(result && result.data);
+      logDebug(
+        "Refresh response HTTP=" + statusCode +
+        " code=" + (result ? result.code : "non-json") +
+        " hasAccessToken=" + Boolean(tokens.accessToken) +
+        " msg=" + ((result && result.message) || "")
+      );
+
+      if (statusCode === 200 && result && String(result.code) === "0" && tokens.accessToken) {
         var newCookie = extractCookieFromResponse(response.headers || {});
         storeAuthentication({
-          accessToken: String(data.accessToken),
-          refreshToken: String(data.refreshToken || auth.refreshToken),
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken || auth.refreshToken,
           cookie: newCookie,
-          refreshUrl: target.url,
-          refreshMethod: target.method,
           refreshedAt: Date.now()
         }, true);
         logDebug("Token refresh succeeded via " + target.url);
@@ -381,8 +438,8 @@ function checkAndSign(auth, isHTTPContext, allowRefresh) {
     var statusCode = response && (response.status || response.statusCode);
     if (!response || statusCode !== 200 || !result || String(result.code) !== "0" || !result.data) {
       var detail = (result && (result.message || result.code)) || ("HTTP " + (statusCode || "未知"));
-      if (allowRefresh && auth.refreshToken) {
-        logDebug("Status check failed (" + detail + "), attempting token refresh...");
+      if (allowRefresh) {
+        logDebug("Status check failed (" + detail + "), attempting token renewal...");
         refreshAuthentication(auth, function (ok, refreshedAuth, refreshError) {
           if (ok && refreshedAuth) {
             checkAndSign(refreshedAuth, isHTTPContext, false);
@@ -394,10 +451,7 @@ function checkAndSign(auth, isHTTPContext, allowRefresh) {
         return;
       }
 
-      var hint = auth.refreshToken
-        ? "；请打开一次微信小程序重新获取"
-        : "；服务端未提供可用 refreshToken，需重新打开小程序获取短期 Token";
-      notify("登录态已过期", detail + hint);
+      notify("登录态已过期", detail + "；请打开一次微信小程序重新获取");
       finish(isHTTPContext);
       return;
     }
