@@ -12,7 +12,6 @@
 
 var STORE_KEY = "dzafc.auto_sign.auth.v1";
 var API_ROOT = "https://mx.dzafc.cn";
-var DEFAULT_APP_ID = "wx74ec8aa8f0b8a3d5";
 var STATUS_URL = API_ROOT + "/api/iris/v1/sign/status";
 var SIGN_URL = API_ROOT + "/api/iris/v1/sign/daily";
 var MINIAPP_TOKEN_URL = API_ROOT + "/api/pie/v1/wechat/miniapp/token";
@@ -85,7 +84,7 @@ function storeAuthentication(patch, silent) {
     deviceId: pickNonEmpty(patch.deviceId, previous.deviceId, ""),
     openId: pickNonEmpty(patch.openId, previous.openId, ""),
     unionId: pickNonEmpty(patch.unionId, previous.unionId, ""),
-    appId: pickNonEmpty(patch.appId, previous.appId, DEFAULT_APP_ID),
+    appId: pickNonEmpty(patch.appId, previous.appId, ""),
     client: pickNonEmpty(patch.client, previous.client, "3"),
     clientVersion: pickNonEmpty(patch.clientVersion, previous.clientVersion, ""),
     userAgent: pickNonEmpty(patch.userAgent, previous.userAgent, "Mozilla/5.0"),
@@ -172,7 +171,7 @@ function saveAuthentication() {
     deviceId: String(headerValue(sourceHeaders, "x-device-id") || ""),
     openId: String(data.openId || data.openid || ""),
     unionId: String(data.unionId || data.unionid || ""),
-    appId: String((reqBody && (reqBody.appId || reqBody.appid)) || DEFAULT_APP_ID),
+    appId: String((reqBody && (reqBody.appId || reqBody.appid)) || ""),
     client: String(headerValue(sourceHeaders, "x-client") || "3"),
     clientVersion: String(headerValue(sourceHeaders, "x-client-version") || ""),
     userAgent: String(headerValue(sourceHeaders, "user-agent") || "Mozilla/5.0"),
@@ -298,9 +297,8 @@ function buildRefreshTargets(auth) {
   }
 
   // 优先使用从前端代码确认的接口：GET /api/pie/v1/wechat/miniapp/token?openid=...&appid=...
-  if (auth.openId) {
-    var appId = auth.appId || DEFAULT_APP_ID;
-    var query = "openid=" + encodeURIComponent(auth.openId) + "&appid=" + encodeURIComponent(appId);
+  if (auth.openId && auth.appId) {
+    var query = "openid=" + encodeURIComponent(auth.openId) + "&appid=" + encodeURIComponent(auth.appId);
     targets.push({
       url: MINIAPP_TOKEN_URL + "?" + query,
       method: "GET",
