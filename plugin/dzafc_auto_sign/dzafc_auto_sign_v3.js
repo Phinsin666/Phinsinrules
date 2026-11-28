@@ -113,11 +113,14 @@ function storeAuthentication(patch, silent) {
   logDebug(
     "storeAuthentication saved=" + saved +
     " hasOpenId=" + Boolean(merged.openId) +
+    " hasAppId=" + Boolean(merged.appId) +
     " hasRefresh=" + Boolean(merged.refreshToken) +
     " hasCookie=" + Boolean(merged.cookie)
   );
   if (saved && shouldNotify) {
-    var extra = merged.openId ? "（含 openId，支持自动换取新 Token）" : "（未获取到 openId，请重新进入小程序首页）";
+    var extra = (merged.openId && merged.appId)
+      ? "（含 openId 与 appId，支持自动换取新 Token）"
+      : ("（缺少 " + (!merged.openId ? "openId" : "appId") + "，请确认插件已更新并重进小程序）");
     notify("登录凭据已获取", "凭据已保存到 Loon 本机" + extra);
   }
   return saved;
@@ -147,6 +150,25 @@ function extractTokenFromData(data) {
     };
   }
   return { accessToken: "", refreshToken: "" };
+}
+
+function saveAuthRequestBody() {
+  var reqBody = (typeof $request.body === "string" && $request.body) ? parseJSON($request.body) : null;
+  var appId = (reqBody && (reqBody.appId || reqBody.appid)) ? String(reqBody.appId || reqBody.appid) : "";
+  var sourceHeaders = $request.headers || {};
+  var patch = {
+    appId: appId,
+    deviceId: String(headerValue(sourceHeaders, "x-device-id") || ""),
+    client: String(headerValue(sourceHeaders, "x-client") || ""),
+    clientVersion: String(headerValue(sourceHeaders, "x-client-version") || ""),
+    userAgent: String(headerValue(sourceHeaders, "user-agent") || ""),
+    acceptLanguage: String(headerValue(sourceHeaders, "accept-language") || ""),
+    cookie: String(headerValue(sourceHeaders, "cookie") || "")
+  };
+  if (patch.appId) {
+    logDebug("Captured appId from auth request body");
+    storeAuthentication(patch, true);
+  }
 }
 
 function saveAuthentication() {
@@ -297,8 +319,9 @@ function buildRefreshTargets(auth) {
   }
 
   // 优先使用从前端代码确认的接口：GET /api/pie/v1/wechat/miniapp/token?openid=...&appid=...
-  if (auth.openId && auth.appId) {
-    var query = "openid=" + encodeURIComponent(auth.openId) + "&appid=" + encodeURIComponent(auth.appId);
+  var effectiveAppId = (SCRIPT_ARGS.appId && String(SCRIPT_ARGS.appId).trim()) || auth.appId;
+  if (auth.openId && effectiveAppId) {
+    var query = "openid=" + encodeURIComponent(auth.openId) + "&appid=" + encodeURIComponent(effectiveAppId);
     targets.push({
       url: MINIAPP_TOKEN_URL + "?" + query,
       method: "GET",
@@ -474,9 +497,13 @@ function checkAndSign(auth, isHTTPContext, allowRefresh) {
   });
 }
 
+var isRequestContext = typeof $request !== "undefined" && typeof $response === "undefined";
 var isHTTPContext = typeof $request !== "undefined" && typeof $response !== "undefined";
 
-if (isHTTPContext && $request.url.indexOf(AUTH_PATH) !== -1) {
+if (isRequestContext && $request.url.indexOf(AUTH_PATH) !== -1) {
+  saveAuthRequestBody();
+  finish(true);
+} else if (isHTTPContext && $request.url.indexOf(AUTH_PATH) !== -1) {
   if (saveAuthentication()) {
     var captured = loadAuthentication();
     if (captured) checkAndSign(captured, true, false);

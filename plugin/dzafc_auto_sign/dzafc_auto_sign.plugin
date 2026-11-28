@@ -4,18 +4,20 @@
 #!homepage = https://github.com/Phinsin666/Phinsinrules/tree/main/plugin/dzafc_auto_sign
 #!system = iOS,iPadOS
 #!loon_version = 3.5.1(983)
-#!date = 2026-11-27
+#!date = 2026-11-28
 
 [Argument]
-refreshUrl = input,"",type=string,tag=刷新接口(可选),desc=留空则自动探测或学习小程序触发的刷新接口
+appId = input,"",type=string,tag=小程序AppID(可选),desc=留空则自动从登录请求体捕获
+refreshUrl = input,"",type=string,tag=刷新接口(可选),desc=留空则自动调用 miniapp/token 换取新令牌
 debugLog = switch,false,type=boolean,tag=调试日志,desc=在 Loon 脚本日志中输出详细请求与续期状态
 
 [Script]
-response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/wechat\/miniapp\/authentication(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${refreshUrl}, ${debugLog}}) with tag="捕获东证登录凭据", timeout=30, requires_body=true
-response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/.*(?:refresh|token)(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${refreshUrl}, ${debugLog}}) with tag="捕获东证刷新凭据", timeout=30, requires_body=true
-response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/iris\/v1\/sign\/status(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${refreshUrl}, ${debugLog}}) with tag="东证签到页获取凭据", timeout=30, requires_body=true
-cron "45 9 * * *" then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${refreshUrl}, ${debugLog}}) with tag="东证每日自动签到", timeout=60
-generic then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${refreshUrl}, ${debugLog}}) with tag="手动测试东证签到", timeout=60, img_url="checkmark.circle.system"
+request if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/wechat\/miniapp\/authentication(?:\?|$)/ then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="捕获东证登录AppID", timeout=15, requires_body=true
+response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/wechat\/miniapp\/authentication(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="捕获东证登录凭据", timeout=30, requires_body=true
+response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/.*(?:refresh|token)(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="捕获东证刷新凭据", timeout=30, requires_body=true
+response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/iris\/v1\/sign\/status(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="东证签到页获取凭据", timeout=30, requires_body=true
+cron "45 9 * * *" then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="东证每日自动签到", timeout=60
+generic then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="手动测试东证签到", timeout=60, img_url="checkmark.circle.system"
 
 [Mitm]
 hostname = mx.dzafc.cn
