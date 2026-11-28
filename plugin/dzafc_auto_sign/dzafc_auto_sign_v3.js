@@ -152,23 +152,10 @@ function extractTokenFromData(data) {
   return { accessToken: "", refreshToken: "" };
 }
 
-function saveAuthRequestBody() {
-  var reqBody = (typeof $request.body === "string" && $request.body) ? parseJSON($request.body) : null;
-  var appId = (reqBody && (reqBody.appId || reqBody.appid)) ? String(reqBody.appId || reqBody.appid) : "";
-  var sourceHeaders = $request.headers || {};
-  var patch = {
-    appId: appId,
-    deviceId: String(headerValue(sourceHeaders, "x-device-id") || ""),
-    client: String(headerValue(sourceHeaders, "x-client") || ""),
-    clientVersion: String(headerValue(sourceHeaders, "x-client-version") || ""),
-    userAgent: String(headerValue(sourceHeaders, "user-agent") || ""),
-    acceptLanguage: String(headerValue(sourceHeaders, "accept-language") || ""),
-    cookie: String(headerValue(sourceHeaders, "cookie") || "")
-  };
-  if (patch.appId) {
-    logDebug("Captured appId from auth request body");
-    storeAuthentication(patch, true);
-  }
+function extractAppIdFromReferer(headers) {
+  var referer = String(headerValue(headers, "referer") || "");
+  var match = referer.match(/servicewechat\.com\/(wx[0-9a-zA-Z]+)\//i);
+  return match ? match[1] : "";
 }
 
 function saveAuthentication() {
@@ -182,8 +169,8 @@ function saveAuthentication() {
 
   var sourceHeaders = $request.headers || {};
   var resHeaders = $response.headers || {};
-  var reqBody = (typeof $request.body === "string" && $request.body) ? parseJSON($request.body) : null;
   var cookie = headerValue(sourceHeaders, "cookie") || extractCookieFromResponse(resHeaders);
+  var appId = extractAppIdFromReferer(sourceHeaders);
 
   var authPatch = {
     accessToken: String(data.accessToken),
@@ -193,7 +180,7 @@ function saveAuthentication() {
     deviceId: String(headerValue(sourceHeaders, "x-device-id") || ""),
     openId: String(data.openId || data.openid || ""),
     unionId: String(data.unionId || data.unionid || ""),
-    appId: String((reqBody && (reqBody.appId || reqBody.appid)) || ""),
+    appId: appId,
     client: String(headerValue(sourceHeaders, "x-client") || "3"),
     clientVersion: String(headerValue(sourceHeaders, "x-client-version") || ""),
     userAgent: String(headerValue(sourceHeaders, "user-agent") || "Mozilla/5.0"),
@@ -497,13 +484,9 @@ function checkAndSign(auth, isHTTPContext, allowRefresh) {
   });
 }
 
-var isRequestContext = typeof $request !== "undefined" && typeof $response === "undefined";
 var isHTTPContext = typeof $request !== "undefined" && typeof $response !== "undefined";
 
-if (isRequestContext && $request.url.indexOf(AUTH_PATH) !== -1) {
-  saveAuthRequestBody();
-  finish(true);
-} else if (isHTTPContext && $request.url.indexOf(AUTH_PATH) !== -1) {
+if (isHTTPContext && $request.url.indexOf(AUTH_PATH) !== -1) {
   if (saveAuthentication()) {
     var captured = loadAuthentication();
     if (captured) checkAndSign(captured, true, false);

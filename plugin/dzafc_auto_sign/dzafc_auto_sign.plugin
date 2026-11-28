@@ -12,7 +12,6 @@ refreshUrl = input,"",type=string,tag=刷新接口(可选),desc=留空则自动�
 debugLog = switch,false,type=boolean,tag=调试日志,desc=在 Loon 脚本日志中输出详细请求与续期状态
 
 [Script]
-request if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/wechat\/miniapp\/authentication(?:\?|$)/ then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="捕获东证登录AppID", timeout=15, requires_body=true
 response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/wechat\/miniapp\/authentication(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="捕获东证登录凭据", timeout=30, requires_body=true
 response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/pie\/v1\/.*(?:refresh|token)(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="捕获东证刷新凭据", timeout=30, requires_body=true
 response if ${url} ~= /^https:\/\/mx\.dzafc\.cn\/api\/iris\/v1\/sign\/status(?:\?|$)/ && ${response.status} == 200 then script("https://raw.githubusercontent.com/Phinsin666/Phinsinrules/main/plugin/dzafc_auto_sign/dzafc_auto_sign_v3.js", {${appId}, ${refreshUrl}, ${debugLog}}) with tag="东证签到页获取凭据", timeout=30, requires_body=true
