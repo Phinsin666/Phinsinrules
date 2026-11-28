@@ -282,7 +282,11 @@ function requestHeaders(auth, withBody, overrides) {
   if (overrides && typeof overrides === "object") {
     var keys = Object.keys(overrides);
     for (var i = 0; i < keys.length; i += 1) {
-      headers[keys[i]] = overrides[keys[i]];
+      if (overrides[keys[i]] === null) {
+        delete headers[keys[i]];
+      } else {
+        headers[keys[i]] = overrides[keys[i]];
+      }
     }
   }
   return headers;
@@ -306,14 +310,23 @@ function buildRefreshTargets(auth) {
   }
 
   // 优先使用从前端代码确认的接口：GET /api/pie/v1/wechat/miniapp/token?openid=...&appid=...
+  // 注意：不要把已过期的 X-Access-Token 带给该接口，否则网关会直接拦截返回 001001。
   var effectiveAppId = (SCRIPT_ARGS.appId && String(SCRIPT_ARGS.appId).trim()) || auth.appId;
   if (auth.openId && effectiveAppId) {
     var query = "openid=" + encodeURIComponent(auth.openId) + "&appid=" + encodeURIComponent(effectiveAppId);
+    var tokenUrl = MINIAPP_TOKEN_URL + "?" + query;
     targets.push({
-      url: MINIAPP_TOKEN_URL + "?" + query,
+      url: tokenUrl,
       method: "GET",
-      headerOverrides: { "X-Client": "5" }
+      headerOverrides: { "X-Client": "5", "X-Access-Token": null }
     });
+    if (auth.refreshToken) {
+      targets.push({
+        url: tokenUrl,
+        method: "GET",
+        headerOverrides: { "X-Client": "5", "X-Access-Token": auth.refreshToken }
+      });
+    }
   }
 
   if (auth.refreshUrl && auth.refreshUrl !== customUrl && auth.refreshUrl !== MINIAPP_TOKEN_URL) {
